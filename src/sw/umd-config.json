@@ -1,0 +1,10 @@
+{
+    "libraryName": "service-worker",
+    "globalObject": "this",
+    "babelPresetEnv": false,
+    "babelReact": false,
+    "babelLoader": false,
+    "externals": {},
+    "addDefines": true,
+    "workerRestAPI": true
+}
