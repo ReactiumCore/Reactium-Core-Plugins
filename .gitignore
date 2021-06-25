@@ -35,7 +35,9 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
-reactium_modules/
+reactium_modules/*
+!reactium_modules/@atomic-reactor
+
 
 # Typescript v1 declaration files
 typings/
