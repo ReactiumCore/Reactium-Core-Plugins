@@ -1,8 +1,8 @@
 import Reactium from 'reactium-core/sdk';
 import './storeCreator';
 import DevTools from './DevTools';
-import Middleware from './middleware';
-import Reducer from './reducer';
+import Middleware from './sdk/middleware';
+import Reducer from './sdk/reducer';
 
 Reactium.Component.register('DevTools', DevTools);
 Reactium.Hook.register(
