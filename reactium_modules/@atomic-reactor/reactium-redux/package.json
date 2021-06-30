@@ -1,6 +1,6 @@
 {
   "name": "@atomic-reactor/reactium-redux",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Redux plugin for Reactium framework",
   "author": "Reactium LLC",
   "license": "MIT",
@@ -11,6 +11,7 @@
     "version": "3.7.5"
   },
   "dependencies": {
+    "@atomic-reactor/use-select": "^1.0.1",
     "react-redux": "^7.2.3",
     "redux": "^4.0.5",
     "redux-devtools": "^3.6.0",
