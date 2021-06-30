@@ -4,18 +4,7 @@ const globby = require('./globby-patch');
 const rootPath = path.resolve(__dirname, '..');
 const gulpConfig = require('./gulp.config');
 
-const version = '3.7.0';
-
-const contextMode = () => {
-    if (
-        process.env.NODE_ENV !== 'development' &&
-        process.env.LAZY_GET_COMPONENTS !== 'off'
-    ) {
-        return 'lazy-once';
-    }
-
-    return 'sync';
-};
+const version = '4.0.1';
 
 const defaultLibraryExternals = {
     axios: {
@@ -30,11 +19,6 @@ const defaultLibraryExternals = {
         externalName: 'copy-to-clipboard',
         requirePath: 'copy-to-clipboard',
     },
-
-    // 'gsap/umd/TweenMax': {
-    //     externalName: '/^gsap.*$/',
-    //     requirePath: 'gsap/umd/TweenMax',
-    // },
 
     moment: {
         externalName: 'moment',
@@ -141,23 +125,6 @@ const defaultManifestConfig = {
         },
     ],
     pluginExternals: defaultLibraryExternals,
-    contexts: {
-        components: {
-            modulePath: 'components',
-            filePattern: '.js?$',
-            mode: contextMode(),
-        },
-        common: {
-            modulePath: 'components/common-ui/',
-            filePattern: '.js?$',
-            mode: contextMode(),
-        },
-        core: {
-            modulePath: 'reactium-core/components',
-            filePattern: '.js?$',
-            mode: contextMode(),
-        },
-    },
     umd: {
         defaultLibraryExternals,
         patterns: [
