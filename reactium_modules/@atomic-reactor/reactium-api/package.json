@@ -1,6 +1,6 @@
 {
   "name": "@atomic-reactor/reactium-api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "API bindings for Reactium framework",
   "author": "Reactium LLC",
   "license": "MIT",
@@ -10,5 +10,8 @@
   "actinium": {
     "version": "3.7.5"
   },
-  "dependencies": {}
+  "dependencies": {
+    "parse": "^2.17.0",
+    "socket.io-client": "^3.1.0"
+  }
 }
