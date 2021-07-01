@@ -1,6 +1,6 @@
 {
   "name": "@atomic-reactor/reactium-service-worker",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Default service worker support for Reactium framework",
   "author": "Reactium LLC",
   "license": "MIT",

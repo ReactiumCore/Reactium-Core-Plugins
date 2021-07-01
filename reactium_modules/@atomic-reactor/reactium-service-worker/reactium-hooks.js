@@ -52,7 +52,20 @@ Reactium.Hook.register(
 Reactium.Hook.register(
     'dependencies-load',
     async () => {
-        Reactium.ServiceWorker.init();
+        if (window.loadServiceWorker) {
+            Reactium.ServiceWorker.init();
+        } else {
+            if (navigator && navigator.serviceWorker) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                if (registrations)
+                    console.log(
+                        'Uninstalling service worker in development mode.',
+                    );
+                for (const registration of registrations) {
+                    registration.unregister();
+                }
+            }
+        }
     },
     Reactium.Enums.priority.highest,
     'service-worker-init',
