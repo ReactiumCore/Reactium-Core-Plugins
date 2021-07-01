@@ -4,8 +4,8 @@
  * -----------------------------------------------------------------------------
  */
 import React from 'react';
-import Features from 'components/Demo/Site/Features';
-import Template from 'components/Demo/Site/Template';
+import Features from 'reactium_modules/@atomic-reactor/reactium-demo/Demo/Site/Features';
+import Template from 'reactium_modules/@atomic-reactor/reactium-demo/Demo/Site/Template';
 
 /**
  * -----------------------------------------------------------------------------

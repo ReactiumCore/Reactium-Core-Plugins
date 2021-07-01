@@ -66,7 +66,6 @@ export default class Template extends Component {
             navbarFixed,
             headerMarginBottom,
             children,
-            style,
             description,
             header = {},
         } = this.props;
@@ -75,7 +74,6 @@ export default class Template extends Component {
         return (
             <>
                 <Helmet>
-                    <link rel='stylesheet' href={style} />
                     <title>{title}</title>
                     <meta name='description' content={description} />
                     <html lang='en' />
@@ -112,5 +110,4 @@ Template.defaultProps = {
     bodyClass: 'demo-site',
     title: 'Reactium',
     description: 'This is an example Reactium Site',
-    style: '/assets/style/demo-site.css',
 };

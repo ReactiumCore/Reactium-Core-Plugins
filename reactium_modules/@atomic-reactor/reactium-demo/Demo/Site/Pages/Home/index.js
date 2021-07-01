@@ -4,9 +4,9 @@
  * -----------------------------------------------------------------------------
  */
 import React from 'react';
-import Hero from 'components/Demo/Site/Hero';
-import Features from 'components/Demo/Site/Features';
-import Template from 'components/Demo/Site/Template';
+import Hero from 'reactium_modules/@atomic-reactor/reactium-demo/Demo/Site/Hero';
+import Features from 'reactium_modules/@atomic-reactor/reactium-demo/Demo/Site/Features';
+import Template from 'reactium_modules/@atomic-reactor/reactium-demo/Demo/Site/Template';
 
 /**
  * -----------------------------------------------------------------------------
