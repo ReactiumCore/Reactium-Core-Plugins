@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node build/.core/index.js",
+    "nodemon": "nodemon ./.core/index.js --exec babel-node",
+    "babel-node": "babel-node ./.core/index.js",
     "test": "jest",
     "static": "npm-run-all build:* && gulp static",
     "local": "gulp local",
@@ -41,7 +43,6 @@
     "parse/node": false
   },
   "dependencies": {
-    "@atomic-reactor/reactium-sdk-core": "^1.1.0",
     "@babel/cli": "^7.13.14",
     "@babel/node": "^7.13.13",
     "@loadable/component": "^5.14.1",
@@ -95,6 +96,7 @@
     "socket.io-client": "^3.1.0",
     "underscore": "*",
     "uuid": "^3.4.0",
+    "webpack-bundle-analyzer": "^4.4.2",
     "xss": "^1.0.8"
   },
   "devDependencies": {
