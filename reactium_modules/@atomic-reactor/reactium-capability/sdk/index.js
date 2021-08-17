@@ -300,7 +300,7 @@ Capability.check = async (checks, strict = true, userID) => {
         .value()
         .map(cap => String(cap).toLowerCase());
 
-    const caps = await Capability.SDK.User.get(userID);
+    const caps = await Capability.User.get(userID);
 
     const match = _.intersection(caps, checks);
 
@@ -345,7 +345,7 @@ Capability.checkAll = async (checks, userID) => {
             return obj;
         }, {});
     } else {
-        const caps = await Capability.SDK.User.get(userID);
+        const caps = await Capability.User.get(userID);
         results = checks.reduce((obj, cap) => {
             obj[cap] = caps.includes(cap);
             return obj;

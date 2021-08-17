@@ -1,6 +1,6 @@
 {
   "name": "@atomic-reactor/reactium-capability",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Actinium Capability API extension for Reactium framework",
   "author": "Reactium LLC",
   "license": "MIT",
