@@ -1,6 +1,6 @@
 {
   "name": "@atomic-reactor/reactium-service-worker",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Default service worker support for Reactium framework",
   "author": "Reactium LLC",
   "license": "MIT",
@@ -10,5 +10,11 @@
   "actinium": {
     "version": "3.7.5"
   },
-  "dependencies": {}
+  "dependencies": {
+    "workbox-build": "^6.4.2",
+    "workbox-core": "^6.4.2",
+    "workbox-precaching": "^6.4.2",
+    "workbox-routing": "^6.4.2",
+    "workbox-strategies": "^6.4.2"
+  }
 }
