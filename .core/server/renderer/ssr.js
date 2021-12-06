@@ -1,93 +1,98 @@
-import React from 'react';
-import { Helmet } from 'react-helmet';
-import { renderToString } from 'react-dom/server';
+const { fork } = require('child_process');
 import op from 'object-path';
-import { matchRoutes } from 'react-router-config';
-import Router from 'reactium-core/components/Router/server';
-import { Zone, useHookComponent } from 'reactium-core/sdk';
+import fs from 'fs-extra';
+import path from 'path';
+import { Hook } from 'reactium-core/sdk';
 
 const app = {};
 app.dependencies = global.dependencies;
 
-const hookableComponent = name => props => {
-    const Component = useHookComponent(name);
-    return <Component {...props} />;
+const simplifyRequest = req => {
+    const reqFields = [
+        'baseUrl',
+        'body',
+        'cookies',
+        'fresh',
+        'hostname',
+        'ip',
+        'ips',
+        'method',
+        'originalUrl',
+        'params',
+        'path',
+        'protocol',
+        'query',
+        'isSSR',
+        'renderMode',
+        'scripts',
+        'headerScripts',
+        'styles',
+        'appGlobals',
+        'appAfterScripts',
+        'headTags',
+        'appBindings',
+    ];
+
+    Hook.run('ssr-request-fields', reqFields);
+
+    return reqFields.reduce((fields, field) => {
+        fields[field] = op.get(req, field);
+        return fields;
+    }, {});
 };
 
 const renderer = async (req, res, context) => {
-    const { store } = await ReactiumBoot.Hook.run('store-create', {
-        server: true,
-    });
-
-    await ReactiumBoot.Hook.run('plugin-ready');
-
-    await ReactiumBoot.Hook.run('app-redux-provider');
-
     const [url] = req.originalUrl.split('?');
-    const matches = matchRoutes(routes, url);
 
     try {
-        let [match] = matches;
-        if (matches.length > 1) {
-            match = matches.find(match => match.isExact);
-        }
-
-        const matchedRoute = op.get(match, 'route', {});
-        const route = {
-            ...matchedRoute,
-            params: op.get(match, 'match.params', {}),
-            query: req.query ? req.query : {},
-        };
-
-        // Check for 404
-        context.notFound = !matches.length || !('path' in matchedRoute);
-
-        // Wait for loader or go ahead and render on error
-        INFO('Loading page data...');
-
-        let data;
-        if ('thunk' in route && typeof route.thunk === 'function') {
-            const maybeThunk = route.thunk(route.params, route.query);
-            if (typeof maybeThunk === 'function')
-                data = await Promise.resolve(
-                    maybeThunk(store.dispatch, store.getState, store),
-                );
-            else data = await Promise.resolve(maybeThunk);
-        }
-
-        await ReactiumBoot.Hook.run(
-            'data-loaded',
-            data,
-            route,
-            route.params,
-            route.query,
+        const ssr = fork(path.resolve(__dirname, './ssr-thread.js'));
+        const { rendered, context: ssrContext } = await new Promise(
+            (resolve, reject) => {
+                ssr.send({
+                    url,
+                    query: op.get(req, 'query', {}),
+                    req: simplifyRequest(req),
+                    bootHooks: global.bootHooks,
+                    appGlobals: req.Server.AppGlobals.list,
+                });
+                ssr.on('message', resolve);
+                ssr.on('error', reject);
+            },
         );
-        INFO('Page data loading complete.');
+        ssr.kill();
+
+        // pass context up
+        Object.entries(ssrContext).forEach(([key, value]) =>
+            op.set(context, key, value),
+        );
+        Object.entries(rendered).forEach(([key, value]) =>
+            op.set(req, key, value),
+        );
+
+        const html = req.template(req);
+
+        // Server Side Generation - Conditionally Caching Routed Components markup
+        if (req.ssgPaths) {
+            if (
+                Array.isArray(req.ssgPaths) &&
+                req.ssgPaths.includes(req.originalUrl)
+            ) {
+                const staticHTMLPath = path.normalize(
+                    staticHTML + req.originalUrl,
+                );
+                fs.ensureDirSync(staticHTMLPath);
+                fs.writeFileSync(
+                    path.resolve(staticHTMLPath, 'index.html'),
+                    html,
+                    'utf8',
+                );
+            }
+        }
+
+        return html;
     } catch (error) {
         ERROR('Page data loading error.', error);
     }
-
-    const Provider = hookableComponent('ReduxProvider');
-    const content = renderToString(
-        <Provider store={store}>
-            <Zone zone='reactium-provider' />
-            <Router
-                server={true}
-                location={req.originalUrl}
-                context={context}
-                routes={routes}
-            />
-            <Zone zone='reactium-provider-after' />
-        </Provider>,
-    );
-
-    req.content = content;
-
-    await ReactiumBoot.Hook.run('app-ready', true);
-
-    const helmet = Helmet.renderStatic();
-
-    return req.template(content, helmet, store, req, res);
 };
 
 module.exports = renderer;

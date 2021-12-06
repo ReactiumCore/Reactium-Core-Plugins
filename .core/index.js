@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// node.js starter application for hosting
+// Reactium Server
 //------------------------------------------------------------------------------
 
 import cors from 'cors';
@@ -14,186 +14,14 @@ import fs from 'fs';
 import op from 'object-path';
 import _ from 'underscore';
 import staticGzip from 'express-static-gzip';
-import moment from 'moment';
-import chalk from 'chalk';
+
 const globby = require('./globby-patch').sync;
 
-const globals = async () => {
-    const ReactiumBoot = (await import('reactium-core/sdk')).default;
-    global.ReactiumBoot = ReactiumBoot;
-    global.defines = {};
-    global.isSSR = 'SSR_MODE' in process.env && process.env.SSR_MODE === 'on';
-    global.useJSDOM =
-        global.isSSR &&
-        (!('SSR_MODE_JSDOM' in process.env) ||
-            process.env.SSR_MODE_JSDOM !== 'off');
-
-    global.actiniumAPIEnabled = process.env.ACTINIUM_API !== 'off';
-    global.actiniumProxyEnabled = process.env.PROXY_ACTINIUM_API !== 'off';
-
-    const defaultPort = 3030;
-    global.PORT = defaultPort;
-    let node_env = process.env.hasOwnProperty('NODE_ENV')
-        ? process.env.NODE_ENV
-        : 'development';
-
-    if (process.env.NODE_ENV === 'development') {
-        let gulpConfig;
-        try {
-            gulpConfig = require('./gulp.config');
-        } catch (err) {
-            gulpConfig = { port: { proxy: PORT } };
-        }
-        PORT = gulpConfig.port.proxy;
-    }
-
-    const PORT_VAR = op.get(process.env, 'PORT_VAR', 'APP_PORT');
-    if (PORT_VAR && op.has(process.env, [PORT_VAR])) {
-        PORT = op.get(process.env, [PORT_VAR], PORT);
-    } else {
-        PORT = op.get(process.env, ['PORT'], PORT);
-    }
-
-    PORT = parseInt(PORT) || defaultPort;
-
-    global.LOG_LEVELS = {
-        DEBUG: 1000,
-        INFO: 500,
-        BOOT: 0,
-        WARN: -500,
-        ERROR: -1000,
-    };
-
-    global.LOG_LEVEL = op.get(
-        LOG_LEVELS,
-        op.get(process.env, 'LOG_LEVEL', 'BOOT'),
-        LOG_LEVELS.BOOT,
-    );
-
-    const APP_NAME = op.get(process.env, 'APP_NAME', 'Reactium');
-    const LOG_THRESHOLD = op.get(LOG_LEVELS, [LOG_LEVEL], LOG_LEVELS.BOOT);
-
-    const reactiumConsole = global.console;
-    for (const [LEVEL, THRESHOLD] of Object.entries(LOG_LEVELS)) {
-        global[LEVEL] = (...args) => {
-            if (
-                process.env.NO_LOGGING === 'true' ||
-                THRESHOLD > LOG_THRESHOLD
-            ) {
-                return;
-            }
-
-            const _W = THRESHOLD <= LOG_LEVELS.WARN;
-            const _E = THRESHOLD <= LOG_LEVELS.ERROR;
-            let color = _W ? chalk.yellow.bold : chalk.cyan;
-            color = _E ? chalk.red.bold : color;
-
-            const time = `[${chalk.magenta(moment().format('HH:mm:ss'))}]`;
-            let name = `${color(String(APP_NAME))}`;
-            name = _E ? `%${name}%` : _W ? `!${name}!` : `[${name}]`;
-
-            let logMethod = op.get(reactiumConsole, LEVEL, reactiumConsole.log);
-            logMethod =
-                typeof logMethod === 'function'
-                    ? logMethod
-                    : reactiumConsole.log;
-            logMethod(time, name, ...args);
-        };
-    }
-    global.console = {
-        log: global.BOOT,
-        warn: global.WARN,
-        error: global.ERROR,
-    };
-
-    global.LOG = global.BOOT;
-};
-
-const reactiumBootHooks = async () => {
-    // include boot DDD artifacts
-    globby([
-        `${rootPath}/.core/**/reactium-boot.js`,
-        `${rootPath}/src/**/reactium-boot.js`,
-        `${rootPath}/reactium_modules/**/reactium-boot.js`,
-        `${rootPath}/node_modules/**/reactium-plugin/**/reactium-boot.js`,
-    ]).map(item => {
-        const p = path.normalize(item);
-        require(p);
-    });
-
-    ReactiumBoot.Hook.runSync('sdk-init', ReactiumBoot);
-    await ReactiumBoot.Hook.run('sdk-init', ReactiumBoot);
-};
+const globals = require('./server-globals');
 
 global.rootPath = path.resolve(__dirname, '..');
 
-const ssrStartup = async () => {
-    if (global.isSSR) {
-        BOOT('SSR Startup.');
-        const { default: deps } = await import('dependencies');
-        global.dependencies = deps;
-
-        if (global.useJSDOM) {
-            // react-side-effect/lib/index.js:85:17 does the opposite of normal
-            // it tries to check to see if the DOM is available, and blows up if it
-            // does on static render
-            // Fixes "You may only call rewind() on the server. Call peek() to read the current state." throw.
-            //
-            // The condition used for this error is set at file scope of this loaded early, so
-            // let's get this in early, before creating global.window with JSDOM.
-            require('react-side-effect');
-
-            const jsdom = require('jsdom');
-            const { JSDOM } = jsdom;
-            const { window } = new JSDOM('<!DOCTYPE html>');
-            const { document, navigator, location } = window;
-
-            // build a soft cushy server-side window environment to catch server-unsafe code
-            global.window = window;
-            global.JSDOM = window;
-            global.document = document;
-            global.navigator = navigator;
-            global.location = location;
-
-            // Important: We'll use this to differential the JSDOM "window" from others.
-            global.window.isJSDOM = true;
-            BOOT('SSR: creating JSDOM object as global.window.');
-        }
-
-        await deps().loadAll('allHooks');
-        await ReactiumBoot.Hook.run('init');
-        await ReactiumBoot.Hook.run('dependencies-load');
-        await ReactiumBoot.Zone.init();
-        await ReactiumBoot.Routing.load();
-        await ReactiumBoot.Hook.run('plugin-dependencies');
-        global.routes = ReactiumBoot.Routing.get();
-
-        if (!'defines' in global) {
-            global.defines = {};
-        }
-
-        if (fs.existsSync(`${rootPath}/src/app/server/defines.js`)) {
-            const defs = require(`${rootPath}/src/app/server/defines.js`);
-            Object.keys(defs).forEach(key => {
-                if (key !== 'process.env') {
-                    global.defines[key] = defs[key];
-                }
-            });
-        }
-    }
-};
-
-const apiConfig = async () => {
-    if (ReactiumBoot.API && ReactiumBoot.API.ActiniumConfig) {
-        const apiConfig = ReactiumBoot.API.ActiniumConfig;
-
-        global.parseAppId = apiConfig.parseAppId;
-        global.actiniumAppId = apiConfig.actiniumAppId;
-        global.restAPI = apiConfig.restAPI;
-    }
-
-    global.app = express();
-};
+global.app = express();
 
 const registeredMiddleware = async () => {
     const { Enums } = ReactiumBoot;
@@ -281,12 +109,22 @@ const registeredMiddleware = async () => {
     });
 
     // serve the static files out of ./public or specified directory
-    const staticAssets =
+    global.staticAssets =
         process.env.PUBLIC_DIRECTORY || path.resolve(process.cwd(), 'public');
+
+    global.staticHTML =
+        process.env.PUBLIC_HTML ||
+        path.resolve(process.cwd(), 'public/static-html');
 
     ReactiumBoot.Server.Middleware.register('static', {
         name: 'static',
         use: staticGzip(staticAssets),
+        order: Enums.priority.neutral,
+    });
+
+    ReactiumBoot.Server.Middleware.register('static-html', {
+        name: 'static-html',
+        use: staticGzip(staticHTML),
         order: Enums.priority.neutral,
     });
 
@@ -515,12 +353,9 @@ const bootup = async () => {
     const logger = console;
     try {
         await globals();
-        await reactiumBootHooks();
-        await ssrStartup();
-        await apiConfig();
         await startServer();
     } catch (error) {
-        ERROR('Error on server startup:', error);
+        console.error('Error on server startup:', error);
     }
 };
 

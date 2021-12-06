@@ -4,7 +4,7 @@ const globby = require('./globby-patch');
 const rootPath = path.resolve(__dirname, '..');
 const gulpConfig = require('./gulp.config');
 
-const version = '4.1.3';
+const version = '4.1.6';
 
 const defaultLibraryExternals = {
     axios: {
@@ -154,7 +154,7 @@ const defaultManifestConfig = {
         ],
         searchParams: {
             extensions: /\.(js|json)$/,
-            exclude: [/.ds_store/i, /.core/i, /.cli\//i, /src\/assets/],
+            exclude: [/\.ds_store/i, /\.core/i, /\.cli\//i, /src\/assets/],
         },
     },
 };
@@ -276,12 +276,6 @@ module.exports = {
                     version: '>=3.0.2',
                     destination: '/.eslintrc',
                     source: '/tmp/update/.eslintrc',
-                },
-                {
-                    overwrite: false,
-                    version: '>=3.0.3',
-                    destination: '/src/app/components/Fallback',
-                    source: '/tmp/update/src/app/components/Fallback',
                 },
                 {
                     overwrite: false,

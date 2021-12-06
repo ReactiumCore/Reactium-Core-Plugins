@@ -20,26 +20,22 @@ const defaultConfig = {
         browsersync: 3000,
         proxy: 3030,
     },
+    serverRetries: 4,
+    serverRetryDelay: 2000,
     open: true,
-    cssPreProcessor: 'sass',
     watch: {
         js: ['src/app/**/*', 'reactium_modules/**/*'],
         markup: ['src/**/*.html', 'src/**/*.css', 'reactium_modules/**/*.css'],
         colors: ['src/**/*/colors.json'],
         pluginAssets: ['src/app/**/plugin-assets.json'],
         restartWatches: [
-            'src/**/assets/style/*.less',
             'src/**/assets/style/*.scss',
-            '!src/**/assets/style/_*.less',
             '!src/**/assets/style/_*.scss',
         ],
         style: [
-            'src/**/*.less',
             'src/**/*.scss',
-            '.core/**/*.less',
             '.core/**/*.scss',
             'reactium_modules/**/*.scss',
-            '!{src/**/assets/style/*.less}',
             '!{src/**/assets/style/*.scss}',
             '!{reactium_modules/**/assets/style/*.scss}',
         ],
@@ -69,6 +65,10 @@ const defaultConfig = {
             '!{src/**/_*.scss}',
             '!{.core/**/_*.scss}',
             '!{reactium_modules/**/_*.scss}',
+        ],
+        styleDDD: [
+            'src/**/*/_reactium-style*.scss',
+            'reactium_modules/**/*/_reactium-style*.scss',
         ],
         assets: [
             '.core/assets/**/*',
@@ -106,6 +106,7 @@ const defaultConfig = {
         build: 'build/src',
         buildCore: 'build/core',
         colors: 'src/assets/style/_scss/_colors.scss',
+        modulesPartial: 'src/assets/style/_scss/_reactium-modules.scss',
         startPath: '/',
     },
     umd: {

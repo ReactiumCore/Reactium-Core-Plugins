@@ -10,12 +10,10 @@ const browserSync = require('browser-sync');
 const gulpif = require('gulp-if');
 const gulpwatch = require('@atomic-reactor/gulp-watch');
 const prefix = require('gulp-autoprefixer');
-const sass = require('gulp-sass');
-sass.compiler = require('sass');
+const sass = require('gulp-sass')(require('sass'));
 const fiber = require('fibers');
 const gzip = require('gulp-gzip');
 const reactiumImporter = require('@atomic-reactor/node-sass-reactium-importer');
-const less = require('gulp-less');
 const cleanCSS = require('gulp-clean-css');
 const sourcemaps = require('gulp-sourcemaps');
 const rename = require('gulp-rename');
@@ -29,12 +27,23 @@ const workbox = require('workbox-build');
 const { File, FileReader } = require('file-api');
 const handlebars = require('handlebars');
 const { resolve } = require('path');
+const axios = require('axios');
+const axiosRetry = require('axios-retry');
+const _ = require('underscore');
 
 // For backward compatibility with gulp override tasks using run-sequence module
 // make compatible with gulp4
 require('module-alias').addAlias('run-sequence', 'gulp4-run-sequence');
 
 const reactium = (gulp, config, webpackConfig) => {
+    axiosRetry(axios, {
+        retries: config.serverRetries,
+        retryDelay: retryCount => {
+            console.log(`retry attempt: ${retryCount}`);
+            return retryCount * config.serverRetryDelay; // time interval between retries
+        },
+    });
+
     const task = require('./get-task')(gulp);
 
     const env = process.env.NODE_ENV || 'development';
@@ -109,23 +118,21 @@ const reactium = (gulp, config, webpackConfig) => {
 
     const serve = ({ open } = { open: config.open }) => done => {
         const proxy = `localhost:${config.port.proxy}`;
-        require('axios')
-            .get(`http://${proxy}`)
-            .then(() => {
-                browserSync({
-                    notify: false,
-                    timestamps: false,
-                    port: config.port.browsersync,
-                    ui: { port: config.port.browsersync + 1 },
-                    proxy,
-                    open: open,
-                    ghostMode: false,
-                    startPath: config.dest.startPath,
-                    ws: true,
-                });
-
-                done();
+        axios.get(`http://${proxy}`).then(() => {
+            browserSync({
+                notify: false,
+                timestamps: false,
+                port: config.port.browsersync,
+                ui: { port: config.port.browsersync + 1 },
+                proxy,
+                open: open,
+                ghostMode: false,
+                startPath: config.dest.startPath,
+                ws: true,
             });
+
+            done();
+        });
     };
 
     const watch = (done, restart = false) => {
@@ -142,9 +149,20 @@ const reactium = (gulp, config, webpackConfig) => {
                     return;
                 }
                 case 'restart-watches': {
-                    console.log("Restarting 'watch'...");
-                    watchProcess.kill();
-                    watch(_ => _, true);
+                    console.log('Waiting for server...');
+                    new Promise(resolve =>
+                        setTimeout(resolve, config.serverRetryDelay),
+                    )
+                        .then(() => {
+                            const proxy = `localhost:${config.port.proxy}`;
+                            return axios.get(`http://${proxy}`);
+                        })
+                        .then(() => {
+                            console.log("Restarting 'watch'...");
+                            watchProcess.kill();
+                            watch(_ => _, true);
+                        })
+                        .catch(error => console.error(error));
                     return;
                 }
             }
@@ -439,23 +457,58 @@ const reactium = (gulp, config, webpackConfig) => {
             });
     };
 
+    const ssg = gulp.series(task('ssg:flush'), task('ssg:warm'));
+
+    const ssgFlush = () => {
+        console.log(chalk.yellow('Flushing Server Side Generated HTML'));
+        del.sync([config.dest.dist + '/static-html']);
+        return Promise.resolve();
+    };
+
+    const ssgWarm = async () => {
+        console.log(chalk.green('Warming Server Side Generated HTML'));
+        const serverUrl = `http://localhost:${port}`;
+
+        let paths = [];
+        try {
+            const { data = [] } = await axios.get(serverUrl + '/ssg-paths');
+            paths = data;
+        } catch ({ response = {} }) {
+            const { status, statusText, data } = response;
+            const error = op.get(data, 'error', { status, statusText, data });
+            throw new Error(
+                `Getting generation paths: ${JSON.stringify(error)}`,
+            );
+        }
+
+        for (let chunk of _.chunk(paths, 5)) {
+            try {
+                await Promise.all(
+                    chunk.map(warmPath => {
+                        console.log(
+                            chalk.green('Warming URL:'),
+                            chalk.blueBright(serverUrl + warmPath),
+                        );
+                        return axios
+                            .get(serverUrl + warmPath)
+                            .catch(error =>
+                                console.error(
+                                    `Error warming ${serverUrl + warmPath}`,
+                                ),
+                            );
+                    }),
+                );
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    };
+
     const staticTask = task('static:copy');
 
     const staticCopy = done => {
         // Copy static files
         fs.copySync(config.dest.dist, config.dest.static);
-
-        let mainPage = path.normalize(
-            `${config.dest.static}/index-static.html`,
-        );
-
-        if (fs.existsSync(mainPage)) {
-            let newName = mainPage
-                .split('index-static.html')
-                .join('index.html');
-            fs.renameSync(mainPage, newName);
-        }
-
         done();
     };
 
@@ -522,66 +575,215 @@ $assets: (
         done();
     };
 
+    const sassPartialPreRegistrations = SassPartial => {
+        SassPartial.register('mixins-dir', {
+            pattern: /mixins\/_reactium-style/,
+            exclude: false,
+            priority: ReactiumGulp.Enums.style.MIXINS,
+        });
+
+        SassPartial.register('mixins-ddd', {
+            pattern: /_reactium-style-mixins/,
+            exclude: false,
+            priority: ReactiumGulp.Enums.style.MIXINS,
+        });
+
+        SassPartial.register('variables-dir', {
+            pattern: /variables\/_reactium-style/,
+            exclude: false,
+            priority: ReactiumGulp.Enums.style.VARIABLES,
+        });
+
+        SassPartial.register('variables-ddd', {
+            pattern: /_reactium-style-variables/,
+            exclude: false,
+            priority: ReactiumGulp.Enums.style.VARIABLES,
+        });
+
+        SassPartial.register('base-dir', {
+            pattern: /base\/_reactium-style/,
+            exclude: false,
+            priority: ReactiumGulp.Enums.style.BASE,
+        });
+
+        SassPartial.register('base-ddd', {
+            pattern: /_reactium-style-base/,
+            exclude: false,
+            priority: ReactiumGulp.Enums.style.BASE,
+        });
+
+        SassPartial.register('atoms-dir', {
+            pattern: /atoms\/_reactium-style/,
+            exclude: false,
+            priority: ReactiumGulp.Enums.style.ATOMS,
+        });
+
+        SassPartial.register('atoms-ddd', {
+            pattern: /_reactium-style-atoms/,
+            exclude: false,
+            priority: ReactiumGulp.Enums.style.ATOMS,
+        });
+
+        SassPartial.register('molecules-dir', {
+            pattern: /molecules\/_reactium-style/,
+            exclude: false,
+            priority: ReactiumGulp.Enums.style.MOLECULES,
+        });
+
+        SassPartial.register('molecules-ddd', {
+            pattern: /_reactium-style-molecules/,
+            exclude: false,
+            priority: ReactiumGulp.Enums.style.MOLECULES,
+        });
+
+        SassPartial.register('organisms-dir', {
+            pattern: /organisms\/_reactium-style/,
+            exclude: false,
+            priority: ReactiumGulp.Enums.style.ORGANISMS,
+        });
+
+        SassPartial.register('organisms-ddd', {
+            pattern: /_reactium-style-organisms/,
+            exclude: false,
+            priority: ReactiumGulp.Enums.style.ORGANISMS,
+        });
+
+        SassPartial.register('overrides-dir', {
+            pattern: /overrides\/_reactium-style/,
+            exclude: false,
+            priority: ReactiumGulp.Enums.style.OVERRIDES,
+        });
+
+        SassPartial.register('overrides-ddd', {
+            pattern: /_reactium-style-overrides/,
+            exclude: false,
+            priority: ReactiumGulp.Enums.style.OVERRIDES,
+        });
+    };
+
+    const dddStylesPartial = done => {
+        const SassPartialRegistry = ReactiumGulp.Utils.registryFactory(
+            'SassPartialRegistry',
+            'id',
+            ReactiumGulp.Utils.Registry.MODES.CLEAN,
+        );
+
+        sassPartialPreRegistrations(SassPartialRegistry);
+        ReactiumGulp.Hook.runSync('ddd-styles-partial', SassPartialRegistry);
+
+        const stylePartials = globby
+            .sync(config.src.styleDDD)
+            .map(partial => {
+                if (/^reactium_modules\//.test(partial)) {
+                    return partial.replace('reactium_modules/', '+');
+                }
+
+                return path.relative(
+                    path.dirname(config.dest.modulesPartial),
+                    path.resolve(rootPath, partial),
+                );
+            })
+            .map(partial => partial.replace(/\.scss$/, ''))
+            .sort((a, b) => {
+                const aMatch =
+                    SassPartialRegistry.list.find(({ pattern }) =>
+                        pattern.test(a),
+                    ) || {};
+                const bMatch =
+                    SassPartialRegistry.list.find(({ pattern }) =>
+                        pattern.test(b),
+                    ) || {};
+
+                const aPriority = op.get(
+                    aMatch,
+                    'priority',
+                    ReactiumGulp.Enums.style.ORGANISMS,
+                );
+                const bPriority = op.get(
+                    bMatch,
+                    'priority',
+                    ReactiumGulp.Enums.style.ORGANISMS,
+                );
+
+                if (aPriority > bPriority) return 1;
+                else if (bPriority > aPriority) return -1;
+                return 0;
+            })
+            .filter(partial => {
+                const match =
+                    SassPartialRegistry.list.find(({ pattern }) =>
+                        pattern.test(partial),
+                    ) || {};
+                return !match || op.get(match, 'exclude', false) !== true;
+            });
+
+        const template = handlebars.compile(`
+// WARNING: Do not directly edit this file !!!!
+// File generated by gulp styles:partials task
+
+{{#each this}}
+@import '{{ this }}';
+{{/each}}
+`);
+
+        fs.ensureFileSync(config.dest.modulesPartial);
+        fs.writeFileSync(
+            config.dest.modulesPartial,
+            template(stylePartials),
+            'utf8',
+        );
+        done();
+    };
+
     const stylesColors = done => {
-        if (config.cssPreProcessor === 'sass') {
-            // Currently only works with sass
-            let colorProfiles = globby.sync(config.src.colors);
-            if (colorProfiles.length > 0) {
-                let colorFileContents =
-                    '// WARNING: Do not directly edit this file !!!!\n// File generated by gulp styles:colors task\n';
-                let colorVars = [];
-                let colorArr = [];
+        const colorProfiles = globby.sync(config.src.colors);
+        if (colorProfiles.length > 0) {
+            let colorFileContents =
+                '// WARNING: Do not directly edit this file !!!!\n// File generated by gulp styles:colors task\n';
+            let colorVars = [];
+            let colorArr = [];
 
-                colorProfiles.forEach(filePath => {
-                    let profile = fs.readFileSync(path.resolve(filePath));
-                    profile = JSON.parse(profile);
+            colorProfiles.forEach(filePath => {
+                let profile = fs.readFileSync(path.resolve(filePath));
+                profile = JSON.parse(profile);
 
-                    colorVars.push(`\n\n// ~/${filePath}`);
+                colorVars.push(`\n\n// ~/${filePath}`);
 
-                    Object.keys(profile).forEach(k => {
-                        let code = profile[k];
-                        let cvar = `$${k}`;
-                        let vline = `${cvar}: ${code} !default;`;
-                        let cname = k.split('color-').join('');
-                        let aline = `\t"${cname}": ${cvar}`;
+                Object.keys(profile).forEach(k => {
+                    let code = profile[k];
+                    let cvar = `$${k}`;
+                    let vline = `${cvar}: ${code} !default;`;
+                    let cname = k.split('color-').join('');
+                    let aline = `\t"${cname}": ${cvar}`;
 
-                        colorVars.push(vline);
-                        colorArr.push(aline);
-                    });
+                    colorVars.push(vline);
+                    colorArr.push(aline);
                 });
+            });
 
-                colorFileContents += colorVars.join('\n') + '\n\n\n';
-                colorFileContents += `$color: (\n${colorArr.join(
-                    ',\n',
-                )}\n) !default;\n\n\n`;
+            colorFileContents += colorVars.join('\n') + '\n\n\n';
+            colorFileContents += `$color: (\n${colorArr.join(
+                ',\n',
+            )}\n) !default;\n\n\n`;
 
-                fs.ensureFileSync(config.dest.colors);
-                fs.writeFileSync(config.dest.colors, colorFileContents, 'utf8');
-            }
+            fs.ensureFileSync(config.dest.colors);
+            fs.writeFileSync(config.dest.colors, colorFileContents, 'utf8');
         }
 
         done();
     };
 
     const stylesCompile = () => {
-        // Compile Sass & Less
-        let isSass = config.cssPreProcessor === 'sass';
-        let isLess = config.cssPreProcessor === 'less';
-
         return gulp
             .src(config.src.style)
             .pipe(gulpif(isDev, sourcemaps.init()))
             .pipe(
-                gulpif(
-                    isSass,
-                    sass({
-                        importer: reactiumImporter,
-                        includePaths: config.src.includes,
-                        fiber,
-                    }).on('error', sass.logError),
-                ),
+                sass({
+                    importer: reactiumImporter,
+                    includePaths: config.src.includes,
+                    fiber,
+                }).on('error', sass.logError),
             )
-            .pipe(gulpif(isLess, less({ paths: config.src.includes })))
             .pipe(prefix(config.browsers))
             .pipe(gulpif(!isDev, cleanCSS()))
             .pipe(gulpif(isDev, sourcemaps.write()))
@@ -592,6 +794,7 @@ $assets: (
 
     const styles = gulp.series(
         task('styles:colors'),
+        task('styles:partials'),
         task('styles:pluginAssets'),
         task('styles:compile'),
     );
@@ -609,6 +812,7 @@ $assets: (
         gulp.watch(config.watch.colors, gulp.task('styles:colors'));
         gulp.watch(config.watch.pluginAssets, gulp.task('styles:pluginAssets'));
         gulp.watch(config.watch.style, gulp.task('styles:compile'));
+        gulp.watch(config.src.styleDDD, gulp.task('styles:partials'));
         gulpwatch(config.watch.markup, watcher);
         gulpwatch(config.watch.assets, watcher);
         const scriptWatcher = gulp.watch(
@@ -644,8 +848,12 @@ $assets: (
         'serve-restart': serve({ open: false }),
         serviceWorker,
         sw,
+        ssg,
+        'ssg:flush': ssgFlush,
+        'ssg:warm': ssgWarm,
         static: staticTask,
         'static:copy': staticCopy,
+        'styles:partials': dddStylesPartial,
         'styles:pluginAssets': pluginAssets,
         'styles:colors': stylesColors,
         'styles:compile': stylesCompile,

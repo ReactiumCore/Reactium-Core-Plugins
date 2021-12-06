@@ -8,11 +8,6 @@ const serialize = require('serialize-javascript');
 
 const normalizeAssets = assets => _.flatten([assets]);
 
-const isToolkit = str => {
-    const v = op.get(ReactiumBoot, 'version', '1.0.23');
-    return semver.gt(v, '1.0.24') ? false : /^\/toolkit/i.test(str);
-};
-
 ReactiumBoot.Hook.registerSync(
     'Server.AppStyleSheets',
     (req, AppStyleSheets) => {
@@ -37,11 +32,6 @@ ReactiumBoot.Hook.registerSync(
 
         const when = (req, itemPath) => {
             const [url] = req.originalUrl.split('?');
-
-            if (isToolkit(url)) {
-                if (/core.css$/.test(itemPath)) return true;
-                return false;
-            }
 
             const includes = [defaultStylesheet];
             ReactiumBoot.Hook.runSync(
@@ -157,8 +147,8 @@ ReactiumBoot.Hook.registerSync(
     'Server.AppBindings',
     (req, AppBindings) => {
         AppBindings.register('router', {
-            template: ({ content = '' }) => {
-                const binding = `<div id="router">${content}</div>`;
+            template: () => {
+                const binding = `<div id="router">${req.content || ''}</div>`;
                 return binding;
             },
             requestParams: ['content'],
@@ -232,41 +222,9 @@ ReactiumBoot.Hook.registerSync('Server.AppGlobals', (req, AppGlobals) => {
     }
 });
 
-const Server = {};
-Server.AppHeaders = ReactiumBoot.Utils.registryFactory(
-    'AppHeaders',
-    'name',
-    ReactiumBoot.Utils.Registry.MODES.CLEAN,
-);
-Server.AppScripts = ReactiumBoot.Utils.registryFactory(
-    'AppScripts',
-    'name',
-    ReactiumBoot.Utils.Registry.MODES.CLEAN,
-);
-Server.AppSnippets = ReactiumBoot.Utils.registryFactory(
-    'AppSnippets',
-    'name',
-    ReactiumBoot.Utils.Registry.MODES.CLEAN,
-);
-Server.AppStyleSheets = ReactiumBoot.Utils.registryFactory(
-    'AppStyleSheets',
-    'name',
-    ReactiumBoot.Utils.Registry.MODES.CLEAN,
-);
-Server.AppBindings = ReactiumBoot.Utils.registryFactory(
-    'AppBindings',
-    'name',
-    ReactiumBoot.Utils.Registry.MODES.CLEAN,
-);
-Server.AppGlobals = ReactiumBoot.Utils.registryFactory(
-    'AppGlobals',
-    'name',
-    ReactiumBoot.Utils.Registry.MODES.CLEAN,
-);
-
 export const renderAppBindings = req => {
     let bindingsMarkup = '';
-    _.sortBy(Object.values(Server.AppBindings.list), 'order').forEach(
+    _.sortBy(Object.values(req.Server.AppBindings.list), 'order').forEach(
         ({ component, markup, template, requestParams = [] }) => {
             // Reactium App will lookup these components and bind them
             if (component && typeof component === 'string') {
@@ -286,12 +244,48 @@ export const renderAppBindings = req => {
     return bindingsMarkup;
 };
 
+const requestRegistries = () => {
+    const Server = {};
+    Server.AppHeaders = ReactiumBoot.Utils.registryFactory(
+        'AppHeaders',
+        'name',
+        ReactiumBoot.Utils.Registry.MODES.CLEAN,
+    );
+    Server.AppScripts = ReactiumBoot.Utils.registryFactory(
+        'AppScripts',
+        'name',
+        ReactiumBoot.Utils.Registry.MODES.CLEAN,
+    );
+    Server.AppSnippets = ReactiumBoot.Utils.registryFactory(
+        'AppSnippets',
+        'name',
+        ReactiumBoot.Utils.Registry.MODES.CLEAN,
+    );
+    Server.AppStyleSheets = ReactiumBoot.Utils.registryFactory(
+        'AppStyleSheets',
+        'name',
+        ReactiumBoot.Utils.Registry.MODES.CLEAN,
+    );
+    Server.AppBindings = ReactiumBoot.Utils.registryFactory(
+        'AppBindings',
+        'name',
+        ReactiumBoot.Utils.Registry.MODES.CLEAN,
+    );
+    Server.AppGlobals = ReactiumBoot.Utils.registryFactory(
+        'AppGlobals',
+        'name',
+        ReactiumBoot.Utils.Registry.MODES.CLEAN,
+    );
+
+    return Server;
+};
+
 export default async (req, res, context) => {
+    const Server = (req.Server = requestRegistries());
     let template,
         renderMode = isSSR ? 'ssr' : 'feo';
 
     req.Server = Server;
-
     req.isSSR = isSSR;
     req.renderMode = renderMode;
     req.scripts = '';
@@ -477,8 +471,8 @@ export default async (req, res, context) => {
      * @apiDescription Before index.html template render for SPA template (both Front-end and Server-Side Render). Defines css files to be loaded.
      * @apiParam {Object} req express request object
      * @apiParam {Object} AppStyleSheets Server app styles registry object.
-     * @apiParam (stylesheet) {String} [path] the src of the javascript
-     * @apiParam (stylesheet) {Number} [order=0] loading order of script
+     * @apiParam (stylesheet) {String} [href] the src of the stylesheet or resource
+     * @apiParam (stylesheet) {Number} [order=0] loading order of stylesheet or resource
      * @apiParam (stylesheet) {String} [rel=stylesheet] the rel attribute
      * @apiParam (stylesheet) {String} [crossorigin] the crossorigin attribute
      * @apiParam (stylesheet) {String} [referrerpolicy] the referrerpolicy attribute
@@ -489,11 +483,11 @@ export default async (req, res, context) => {
      * @apiExample reactium-boot.js
      ReactiumBoot.Hook.register('Server.AppStyleSheets', async (req, AppStyleSheets) => {
          AppStyleSheets.register('my-stylesheet', {
-             path: '/assets/css/some-additional.css'
+             href: '/assets/css/some-additional.css'
          });
 
          AppStyleSheets.register('my-csn-script', {
-             path: 'https://cdn.example.com/cdn.loaded.css'
+             href: 'https://cdn.example.com/cdn.loaded.css'
              order: 1, // scripts will be ordered by this
          });
      });
@@ -514,6 +508,7 @@ export default async (req, res, context) => {
     _.sortBy(Object.values(Server.AppStyleSheets.list), 'order').forEach(
         ({
             path,
+            href,
             rel = 'stylesheet',
             crossorigin,
             referrerpolicy,
@@ -523,6 +518,7 @@ export default async (req, res, context) => {
             type,
             when = () => true,
         }) => {
+            const hrefPath = path || href;
             const attributes = {
                 rel:
                     typeof rel === 'string' &&
@@ -558,7 +554,7 @@ export default async (req, res, context) => {
                         'unsafe-url',
                     ].includes(referrerpolicy) &&
                     `referrerpolicy="${referrerpolicy}"`,
-                href: typeof path === 'string' && `href="${path}"`,
+                href: typeof hrefPath === 'string' && `href="${hrefPath}"`,
                 hrefLang:
                     typeof hrefLang === 'string' && `hreflang="${hrefLang}"`,
                 media: typeof media === 'string' && `media="${media}"`,
@@ -572,7 +568,7 @@ export default async (req, res, context) => {
             const stylesSheet = `<link ${_.compact(
                 Object.values(attributes),
             ).join(' ')} />\n`;
-            if (when(req, path)) req.styles += stylesSheet;
+            if (when(req, hrefPath)) req.styles += stylesSheet;
         },
     );
 

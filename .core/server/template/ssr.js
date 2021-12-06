@@ -3,24 +3,23 @@ import { renderAppBindings } from '../renderer';
 
 module.exports = {
     version: '%TEMPLATE_VERSION%',
-    template: (content, helmet, store, req, res) => {
+    template: req => {
         return `<!DOCTYPE html>
-        <html ${helmet.htmlAttributes.toString()}>
+        <html ${req.helmet.htmlAttributes}>
             <head>
                 ${req.headTags}
                 ${req.styles}
-                ${helmet.title.toString()}
-                ${helmet.meta.toString()}
-                ${helmet.link.toString()}
+                ${req.helmet.title}
+                ${req.helmet.meta}
+                ${req.helmet.link}
             </head>
-            <body ${helmet.bodyAttributes.toString()}>
+            <body ${req.helmet.bodyAttributes}>
                 ${req.headerScripts}
                 ${renderAppBindings(req)}
 
                 <script>
                     window.ssr = true;
                     window.defines = ${serialize(defines)};
-                    window.INITIAL_STATE = ${serialize(store.getState())};
                     ${req.appGlobals}
                 </script>
                 ${req.scripts}
