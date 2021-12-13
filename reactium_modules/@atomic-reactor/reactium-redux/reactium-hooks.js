@@ -6,17 +6,25 @@ import Reducer from './sdk/reducer';
 
 Reactium.Component.register('DevTools', DevTools);
 Reactium.Hook.register(
-    'app-redux-provider',
+    'app-context-provider',
     async () => {
-        Reactium.Component.unregister('ReduxProvider');
-        const { Provider } = await import('react-redux');
-        Reactium.Component.register('ReduxProvider', Provider);
+        const { Provider: ReduxProvider } = await import('react-redux');
+        Reactium.Component.register('ReduxProvider', ReduxProvider);
+
+        Reactium.AppContext.register(
+            'ReduxProvider',
+            {
+                provider: ReduxProvider,
+                store: Reactium.Redux.store,
+            },
+            Reactium.Enums.priority.neutral,
+        );
+
+        Reactium.Middleware = Middleware;
+        Reactium.Reducer = Reducer;
+
         console.log('Defining Redux Provider.');
-        return Promise.resolve();
     },
     Reactium.Enums.priority.high,
     'REDUX_PROVIDER',
 );
-
-Reactium.Middleware = Middleware;
-Reactium.Reducer = Reducer;
