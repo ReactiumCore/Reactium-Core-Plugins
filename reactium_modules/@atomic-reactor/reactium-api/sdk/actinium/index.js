@@ -1,5 +1,4 @@
 import { isBrowserWindow } from '@atomic-reactor/reactium-sdk-core';
-import { io } from 'socket.io-client';
 import apiConfig from './config';
 
 let Actinium = null;
@@ -35,6 +34,9 @@ if (Actinium) {
     // Configure LiveQuery
     if (isBrowserWindow()) {
         const { host, protocol } = location;
+
+        // on windows, this compiles incorrectly, so use the distribution version
+        const { io } = require('socket.io-client/dist/socket.io');
 
         // proxied through express
         let ioURL = `${protocol}//${host}${restAPI}`;
