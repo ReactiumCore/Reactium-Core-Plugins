@@ -6,7 +6,7 @@
     "version": "4.0.2"
   },
   "name": "@atomic-reactor/reactium-svg",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Plugin for import SVG images",
   "author": "Reactium LLC",
   "license": "MIT",
