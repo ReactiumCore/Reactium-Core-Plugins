@@ -1,15 +1,15 @@
 {
-  "name": "@atomic-reactor/reactium-service-worker",
-  "version": "2.0.0",
-  "description": "Default service worker support for Reactium framework",
-  "author": "Reactium LLC",
-  "license": "MIT",
-  "reactium": {
-    "version": "4.0.2"
-  },
   "actinium": {
     "version": "3.7.5"
   },
+  "reactium": {
+    "version": "4.0.2"
+  },
+  "name": "@atomic-reactor/reactium-service-worker",
+  "version": "2.0.1",
+  "description": "Default service worker support for Reactium framework",
+  "author": "Reactium LLC",
+  "license": "MIT",
   "dependencies": {
     "workbox-build": "^6.5.4",
     "workbox-core": "^6.5.4",
