@@ -11,6 +11,6 @@
   "author": "Reactium LLC",
   "license": "MIT",
   "dependencies": {
-    "@svgr/webpack": "5.0.0"
+    "@svgr/webpack": "6.3.1"
   }
 }
