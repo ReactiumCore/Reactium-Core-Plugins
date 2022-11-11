@@ -36,7 +36,7 @@ if (Actinium) {
         const { host, protocol } = location;
 
         // on windows, this compiles incorrectly, so use the distribution version
-        const { io } = require('socket.io-client/dist/socket.io');
+        const { io } = require('socket.io-client/dist/socket.io.js');
 
         // proxied through express
         let ioURL = `${protocol}//${host}${restAPI}`;
