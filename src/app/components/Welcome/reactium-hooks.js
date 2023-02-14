@@ -1,13 +1,12 @@
 /**
  * -----------------------------------------------------------------------------
- * Reactium Plugin {{name}}
+ * Reactium Plugin Welcome
  * -----------------------------------------------------------------------------
  */
 
-import Component from './index';
+import { Welcome } from './index';
 import Reactium from 'reactium-core/sdk';
 
 (async () => {
-    await Reactium.Plugin.register('{{name}}');
-    Reactium.Component.register('{{name}}', Component);
+    Reactium.Component.register('Welcome', Welcome);
 })();

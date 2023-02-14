@@ -74,43 +74,46 @@ ReactiumBoot.Hook.registerSync(
     (req, AppScripts, res) => {
         // Webpack assets
         if (process.env.NODE_ENV === 'development') {
-            const assetsByChunkName = res.locals.webpackStats.toJson()
-                .assetsByChunkName;
-
-            Object.values(assetsByChunkName).forEach(chunk => {
-                _.flatten([
-                    normalizeAssets(chunk)
-                        .filter(path => path.endsWith('.js'))
-                        .filter(path => /main\.js$/.test(path)),
-                ]).forEach(path =>
+            const { stats: context } = res.locals.webpack.devMiddleware;
+            const stats = context.toJson();
+            _.pluck(stats.namedChunkGroups.main.assets, 'name').forEach(
+                path => {
                     AppScripts.register(path, {
                         path: `/${path}`,
                         order: ReactiumBoot.Enums.priority.highest,
                         footer: true,
-                    }),
-                );
-            });
+                    });
+                },
+            );
 
             return;
         }
 
-        const scriptPathBase =
-            process.env.PUBLIC_DIRECTORY || `${process.cwd()}/public`;
+        try {
+            const webpackAssets = JSON.parse(
+                fs.readFileSync(
+                    path.resolve(
+                        rootPath,
+                        'src/app/server/webpack-manifest.json',
+                    ),
+                ),
+            );
 
-        globby
-            .sync(
-                path
-                    .resolve(scriptPathBase, 'assets', 'js', '*main.js')
-                    .replace(/\\/g, '/'),
-            )
-            .map(script => `/assets/js/${path.parse(script).base}`)
-            .forEach(path =>
-                AppScripts.register(path, {
-                    path,
+            ReactiumBoot.Hook.runSync('webpack-server-assets', webpackAssets);
+            webpackAssets.forEach(asset =>
+                AppScripts.register(asset, {
+                    path: `/assets/js/${asset}`,
                     order: ReactiumBoot.Enums.priority.highest,
                     footer: true,
                 }),
             );
+        } catch (error) {
+            console.error(
+                'build/src/app/server/webpack-manifest.json not found or invalid JSON',
+                error,
+            );
+            process.exit(1);
+        }
     },
     ReactiumBoot.Enums.priority.highest,
     'SERVER-APP-SCRIPTS-CORE',
@@ -148,7 +151,7 @@ ReactiumBoot.Hook.registerSync(
     (req, AppBindings) => {
         AppBindings.register('router', {
             template: () => {
-                const binding = `<div id="router">${req.content || ''}</div>`;
+                const binding = ` <div data-reactium-bind="App"></div>`;
                 return binding;
             },
             requestParams: ['content'],
@@ -168,17 +171,12 @@ const sanitizeTemplateVersion = version => {
 ReactiumBoot.Hook.registerSync(
     'Server.beforeApp',
     req => {
-        const renderMode = op.get(req, 'renderMode', 'feo');
         const {
             semver: coreSemver,
         } = require(`${rootPath}/.core/reactium-config`);
 
-        if (
-            fs.existsSync(
-                `${rootPath}/src/app/server/template/${renderMode}.js`,
-            )
-        ) {
-            let localTemplate = require(`${rootPath}/src/app/server/template/${renderMode}`);
+        if (fs.existsSync(`${rootPath}/src/app/server/template/feo.js`)) {
+            let localTemplate = require(`${rootPath}/src/app/server/template/feo`);
             let templateVersion = sanitizeTemplateVersion(
                 localTemplate.version,
             );
@@ -188,7 +186,7 @@ ReactiumBoot.Hook.registerSync(
                 req.template = localTemplate.template;
             } else {
                 console.warn(
-                    `${rootPath}/src/app/server/template/${renderMode}.js is out of date, and will not be used. Use 'arcli server template' command to update.`,
+                    `${rootPath}/src/app/server/template/feo.js is out of date, and will not be used. Use 'arcli server template' command to update.`,
                 );
             }
         }
@@ -282,12 +280,8 @@ const requestRegistries = () => {
 
 export default async (req, res, context) => {
     const Server = (req.Server = requestRegistries());
-    let template,
-        renderMode = isSSR ? 'ssr' : 'feo';
 
     req.Server = Server;
-    req.isSSR = isSSR;
-    req.renderMode = renderMode;
     req.scripts = '';
     req.headerScripts = '';
     req.styles = '';
@@ -296,7 +290,7 @@ export default async (req, res, context) => {
     req.headTags = '';
     req.appBindings = '';
 
-    const coreTemplate = require(`../template/${renderMode}`);
+    const coreTemplate = require(`../template/feo`);
     req.template = coreTemplate.template;
 
     /**
@@ -591,7 +585,7 @@ export default async (req, res, context) => {
 
              // Add ordinary markup for React to bind to
              AppBindings.register('router', {
-                 markup: '<div id="router"></div>',
+                 markup: ' <div data-reactium-bind="App"></div>',
              });
          },
          ReactiumBoot.Enums.priority.highest,
@@ -647,5 +641,5 @@ ga('send', 'pageview');
     ReactiumBoot.Hook.runSync('Server.afterApp', req, Server);
     await ReactiumBoot.Hook.run('Server.afterApp', req, Server);
 
-    return require(`./${renderMode}`)(req, res, context);
+    return require(`./feo`)(req, res, context);
 };

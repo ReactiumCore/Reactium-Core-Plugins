@@ -1,76 +1,29 @@
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
 import 'reactium-core/components/Router/reactium-hooks';
 import op from 'object-path';
 import _ from 'underscore';
 import deps from 'dependencies';
 
 import('reactium-core/sdk').then(
-    async ({ default: Reactium, HookComponent, isServerWindow }) => {
+    async ({ default: Reactium, useHookComponent }) => {
         Reactium.Hook.register(
             'component-bindings',
             async context => {
-                const { default: getComponents } = await import(
-                    'dependencies/getComponents'
-                );
+                const { hookableComponent } = await import('reactium-core/sdk');
 
                 // Placeholder for the bindable elements
                 const bindPoints = [];
 
-                // <Component /> DOM Elements array
-                const elements =
-                    typeof document !== 'undefined'
-                        ? Array.prototype.slice.call(
-                              document.querySelectorAll('component'),
-                          )
-                        : [];
+                const elements = Array.from(
+                    document.querySelectorAll('[data-reactium-bind]'),
+                );
 
                 if (elements.length > 0) {
                     let types = [];
-
-                    let elms = elements.map(elm => {
-                        let path = elm.getAttribute('path');
-                        let type = elm.getAttribute('type');
-
-                        types.push(type);
-
-                        return { path, type };
-                    });
-
-                    let components = getComponents(elms);
-
-                    elements.forEach(elm => {
-                        // Get the component type
-                        let type = elm.getAttribute('type');
-
-                        if (!components.hasOwnProperty(type)) {
-                            return;
-                        }
-
-                        // Get parameters from container element
-                        let params = {};
-                        let exclude = ['type', 'path'];
-                        Object.entries(elm.attributes).forEach(
-                            ([key, attr]) => {
-                                key = String(key).toLowerCase();
-                                if (exclude.indexOf(key) < 0) {
-                                    return;
-                                }
-                                params[attr.name] = attr.value;
-                            },
-                        );
-
-                        // Get the children from the element and pass them to the component
-                        let children = elm.innerHTML;
-                        if (children) {
-                            params['children'] = children;
-                        }
-
-                        // Create the React element and apply parameters
-                        let cmp = React.createElement(components[type], params);
-                        bindPoints.push({ component: cmp, element: elm });
-                        console.log('Binding components.');
-                    });
+                    for (const Element of elements) {
+                        const type = Element.getAttribute('data-reactium-bind');
+                        const Component = hookableComponent(type);
+                        bindPoints.push({ type, Element, Component });
+                    }
                 }
 
                 context.bindPoints = bindPoints;
@@ -139,41 +92,10 @@ import('reactium-core/sdk').then(
             'REACTIUM_ZONE_DEFAULTS',
         );
 
-        const NoopProvider = ({ children }) => children;
-        Reactium.Hook.register(
-            'app-context-provider',
-            async () => {
-                /**
-             * @api {Hook} store-create store-create
-             * @apiName store-create
-             * @apiDescription Called after dependencies-load to trigger Redux store creator.
-             async only - used in front-end or isomorphically when running server-side rendering mode (SSR)
-            * @apiParam {Object} params params.server indicate if is store creation on the server, or in the front-end application
-            * @apiParam {Object} context Core implementation of this hook will create the Redux store and set it to context.store.
-            * @apiGroup Hooks
-            */
-                const { store } = await Reactium.Hook.run('store-create', {
-                    server: isServerWindow(),
-                });
-                Reactium.store = store;
-
-                const ReduxProvider = ({ store }) => (
-                    <HookComponent hookName='ReduxProvider' store={store} />
-                );
-
-                Reactium.AppContext.register('ReduxProvider', {
-                    provider: NoopProvider,
-                    store,
-                });
-            },
-            Reactium.Enums.priority.highest,
-            'NOOP_REDUX_PROVIDER',
-        );
-
         Reactium.Hook.register(
             'app-router',
             async () => {
-                const { default: Router } = await import(
+                const { Router } = await import(
                     'reactium-core/components/Router'
                 );
                 Reactium.Component.register('Router', Router);
@@ -184,22 +106,10 @@ import('reactium-core/sdk').then(
         );
 
         Reactium.Hook.register(
-            'app-ssr-mode',
-            context => {
-                context.ssr = window && 'ssr' in window && window.ssr;
-                return Promise.resolve();
-            },
-            Reactium.Enums.priority.highest,
-            'REACTIUM_APP_SSR_MODE',
-        );
-
-        Reactium.Hook.register(
             'app-boot-message',
-            (ssr = false, context) => {
-                const mode = ssr ? 'SSR' : 'FE';
-                const binding = ssr ? 'Hydrating' : 'Binding';
+            context => {
                 context.message = [
-                    `%c [Reactium] ${mode} Mode: %c⚡💡 %c${binding} Reactium. %c⚡💡 `,
+                    `%c [Reactium] %c⚡💡 %cBinding Reactium. %c⚡💡 `,
                     'font-size: 16px; color: #fff; background-color: #4F82BA',
                     'font-size: 16px; color: #F4F19C; background-color: #4F82BA',
                     'font-size: 16px; color: #fff; background-color: #4F82BA',
@@ -219,7 +129,7 @@ import('reactium-core/sdk').then(
  * @apiName dependencies-load
  * @apiDescription Called after init to give an application a change to load
  async dependencies. Many Domain Driven Design (DDD) artifacts from generated src/manifest.js are loaded on this hook
- async only - used in front-end or isomorphically when running server-side rendering mode (SSR)
+ async only - used in front-end
  * @apiGroup Hooks
  */
 
@@ -243,9 +153,8 @@ import('reactium-core/sdk').then(
 | plugin-ready | Called after all plugins registration callbacks have completed |
 | component-bindings | Called to sibling React components and their DOM element bindings |
 | app-bindpoint | Called to define the main application bind point. |
-| app-redux-provider | Called to define the Redux provider component |
+| app-context-provider | Called to define React application-wrapping context providers, such as Redux / Theme, etc. |
 | app-router | Called to provide the React router component |
-| app-ssr-mode | Called to make the application aware of server-side rendering mode |
 | app-boot-message | Called to define the javascript console boot message |
 | app-ready | Called when the application is being bound or hydrated by ReactDOM |
  * @apiGroup Hooks
