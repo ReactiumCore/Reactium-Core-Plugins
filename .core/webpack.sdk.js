@@ -8,31 +8,6 @@ const path = require('path');
 
 global.ReactiumWebpack = ReactiumWebpack;
 
-const matchChunk = (test, debug) => module => {
-    const chunkNames = [];
-    for (const chunk of module.chunksIterable) {
-        chunkNames.push(chunk.name);
-    }
-
-    const names = _.compact(
-        _.flatten([
-            module.nameForCondition && module.nameForCondition(),
-            chunkNames,
-        ]),
-    );
-
-    const match = !!names.find(name => test.test(name));
-    if (debug && match) {
-        console.log({
-            test: test.toString(),
-            name: module.nameForCondition && module.nameForCondition(),
-            chunkNames,
-        });
-    }
-
-    return match;
-};
-
 let artifacts = {};
 class WebpackReactiumWebpack {
     constructor(name, ddd, context) {
@@ -50,6 +25,20 @@ class WebpackReactiumWebpack {
         this.optimizationValue = {
             minimize: false,
         };
+
+        this.resolveAliases = ReactiumWebpack.Utils.registryFactory(
+            'resolveAliases',
+            'id',
+            ReactiumWebpack.Utils.Registry.MODES.CLEAN,
+        );
+        this.resolveAliases.sdk = this;
+
+        this.transpiledDependencies = ReactiumWebpack.Utils.registryFactory(
+            'transpiledDependencies',
+            'module',
+            ReactiumWebpack.Utils.Registry.MODES.CLEAN,
+        );
+        this.transpiledDependencies.sdk = this;
 
         this.ignores = ReactiumWebpack.Utils.registryFactory(
             'ignores',
@@ -159,6 +148,10 @@ class WebpackReactiumWebpack {
         return this.overridesValue || {};
     }
 
+    addResolveAlias(id, alias) {
+        this.resolveAliases.register(id, { alias });
+    }
+
     addRule(id, rule) {
         this.rules.register(id, { rule });
     }
@@ -169,6 +162,10 @@ class WebpackReactiumWebpack {
 
     addPlugin(id, plugin) {
         this.plugins.register(id, { plugin });
+    }
+
+    addTranspiledDependency(module) {
+        this.transpiledDependencies.register(module);
     }
 
     addContext(id, context) {
@@ -263,30 +260,11 @@ class WebpackReactiumWebpack {
         return this.plugins.list.map(({ id, plugin }) => plugin);
     }
 
-    matchChunk(test, debug) {
+    matchChunk(test) {
         return module => {
-            const chunkNames = [];
-            for (const chunk of module.chunksIterable) {
-                chunkNames.push(chunk.name);
-            }
-
-            const names = _.compact(
-                _.flatten([
-                    module.nameForCondition && module.nameForCondition(),
-                    chunkNames,
-                ]),
-            );
-
-            const match = !!names.find(name => test.test(name));
-            if (debug && match) {
-                console.log({
-                    test: test.toString(),
-                    name: module.nameForCondition && module.nameForCondition(),
-                    chunkNames,
-                });
-            }
-
-            return match;
+            const moduleName =
+                module.nameForCondition && module.nameForCondition();
+            return test.test(moduleName);
         };
     }
 
@@ -333,27 +311,12 @@ class WebpackReactiumWebpack {
     setCodeSplittingOptimize(env) {
         this.optimizationValue = {
             minimize: Boolean(env !== 'development'),
+            chunkIds: 'named',
             splitChunks: {
                 chunks: 'all',
                 cacheGroups: {
-                    vendors: {
-                        test: this.matchChunk(/[\\/]node_modules[\\/]/),
-                        priority: -10,
-                        reuseExistingChunk: true,
-                    },
-                    core: {
-                        test: this.matchChunk(/[\\/]\.core/),
-                        priority: -10,
-                        reuseExistingChunk: true,
-                    },
-                    sdk: {
-                        test: this.matchChunk(/[\\/]\.core[\\/]sdk/),
-                        priority: -20,
-                        priority: 0,
-                        reuseExistingChunk: true,
-                    },
-                    sw: {
-                        test: this.matchChunk(/[\\/]node_modules[\\/]workbox/),
+                    main: {
+                        minChunks: 1,
                         priority: -20,
                         reuseExistingChunk: true,
                     },
@@ -365,12 +328,33 @@ class WebpackReactiumWebpack {
     config() {
         ReactiumWebpack.Hook.runSync('before-config', this);
 
-        return {
+        if (this.transpiledDependencies.list.length > 0) {
+            this.addRule('babel-loader', {
+                test: [/\.jsx|js($|\?)/],
+                exclude: [
+                    new RegExp(
+                        `node_modules\/(?!(${this.transpiledDependencies.list
+                            .map(({ module }) => module)
+                            .join('|')})\/).*`,
+                    ),
+                    /umd.js$/,
+                ],
+                resolve: {
+                    extensions: ['.js', '.jsx', '.json'],
+                },
+                use: [
+                    {
+                        loader: 'babel-loader',
+                    },
+                ],
+            });
+        }
+
+        const theConfig = {
             mode: this.mode,
             target: this.target,
             output: this.output,
             entry: this.entry,
-            devtool: this.devtool,
             optimization: this.optimization,
             externals: this.getExternals(),
             module: {
@@ -381,6 +365,19 @@ class WebpackReactiumWebpack {
             plugins: this.getPlugins(),
             ...this.overrides,
         };
+
+        if (this.devtool) theConfig.devtool = this.devtool;
+
+        if (this.resolveAliases.list.length > 0) {
+            const alias = {};
+            this.resolveAliases.list.forEach(({ id: from, alias: to }) => {
+                alias[from] = to;
+            });
+            theConfig.resolve = { alias };
+        }
+
+        ReactiumWebpack.Hook.runSync('after-config', theConfig, this);
+        return theConfig;
     }
 }
 

@@ -115,8 +115,29 @@ const reactium = (gulp, config, webpackConfig) => {
         console.log(`File ${e.event}: ${displaySrc} -> ${displayDest}`);
     };
 
+    const _opnWrapperMonkeyPatch = open =>
+        function(url, name, bs) {
+            const app = op.get(
+                process.env,
+                'BROWERSYNC_OPEN_BROWSER',
+                'chrome',
+            );
+            let browser = open.apps.chrome;
+            if (app in open.apps) browser = open.apps[app];
+
+            open(url, { app: { name: browser } }).catch(function(error) {
+                bs.events.emit('browser:error');
+            });
+        };
+
     const serve = ({ open } = { open: config.open }) => done => {
         const proxy = `localhost:${config.port.proxy}`;
+
+        // monkey-path opnWrapper for linux support
+        const open = require('open');
+        const utils = require('browser-sync/dist/utils');
+        utils.opnWrapper = _opnWrapperMonkeyPatch(open);
+
         axios.get(`http://${proxy}`).then(() => {
             browserSync({
                 notify: false,
@@ -183,8 +204,7 @@ const reactium = (gulp, config, webpackConfig) => {
         return ps;
     };
 
-    const local = ({ ssr = false } = {}) => async done => {
-        const SSR_MODE = ssr ? 'on' : 'off';
+    const local = async done => {
         const crossEnvModulePath = path.resolve(
             path.dirname(require.resolve('cross-env')),
             '..',
@@ -200,22 +220,12 @@ const reactium = (gulp, config, webpackConfig) => {
 
         await gulp.task('mainManifest')(() => Promise.resolve());
 
-        command(
-            'node',
-            [
-                crossEnvBin,
-                `SSR_MODE=${SSR_MODE}`,
-                'NODE_ENV=development',
-                'gulp',
-            ],
-            done,
-        );
+        command('node', [crossEnvBin, 'NODE_ENV=development', 'gulp'], done);
 
         command(
             'node',
             [
                 crossEnvBin,
-                `SSR_MODE=${SSR_MODE}`,
                 'NODE_ENV=development',
                 'nodemon',
                 './.core/index.js',
@@ -363,21 +373,44 @@ const reactium = (gulp, config, webpackConfig) => {
         if (!isDev || process.env.MANUAL_DEV_BUILD === 'true') {
             webpack(webpackConfig, (err, stats) => {
                 if (err) {
-                    console.log(err());
-                    done();
-                    return;
-                }
-
-                let result = stats.toJson();
-
-                if (result.errors.length > 0) {
-                    result.errors.forEach(error => {
-                        console.log(error);
-                    });
+                    console.error(err.stack || err);
+                    if (err.details) {
+                        console.error(err.details);
+                    }
 
                     done();
                     return;
                 }
+
+                const info = stats.toJson();
+                if (stats.hasErrors()) {
+                    console.error(info.errors);
+                    done();
+                    return;
+                }
+
+                if (stats.hasWarnings()) {
+                    if (process.env.DEBUG === 'on') console.warn(info.warnings);
+                }
+
+                const mainEntryAssets = _.pluck(
+                    info.namedChunkGroups.main.assets,
+                    'name',
+                );
+                ReactiumGulp.Hook.runSync(
+                    'main-webpack-assets',
+                    mainEntryAssets,
+                    info,
+                    stats,
+                );
+                const serverAppPath = path.resolve(rootPath, 'src/app/server');
+
+                fs.ensureDirSync(serverAppPath);
+                fs.writeFileSync(
+                    path.resolve(serverAppPath, 'webpack-manifest.json'),
+                    JSON.stringify(mainEntryAssets),
+                    'utf-8',
+                );
 
                 done();
             });
@@ -429,53 +462,6 @@ const reactium = (gulp, config, webpackConfig) => {
 
     // Stub serviceWorker task. Implementation moved to @atomic-reactor/reactium-service-worker plugin
     const serviceWorker = () => Promise.resolve();
-
-    const ssg = gulp.series(task('ssg:flush'), task('ssg:warm'));
-
-    const ssgFlush = () => {
-        console.log(chalk.yellow('Flushing Server Side Generated HTML'));
-        del.sync([config.dest.dist + '/static-html']);
-        return Promise.resolve();
-    };
-
-    const ssgWarm = async () => {
-        console.log(chalk.green('Warming Server Side Generated HTML'));
-        const serverUrl = `http://localhost:${port}`;
-
-        let paths = [];
-        try {
-            const { data = [] } = await axios.get(serverUrl + '/ssg-paths');
-            paths = data;
-        } catch ({ response = {} }) {
-            const { status, statusText, data } = response;
-            const error = op.get(data, 'error', { status, statusText, data });
-            throw new Error(
-                `Getting generation paths: ${JSON.stringify(error)}`,
-            );
-        }
-
-        for (let chunk of _.chunk(paths, 5)) {
-            try {
-                await Promise.all(
-                    chunk.map(warmPath => {
-                        console.log(
-                            chalk.green('Warming URL:'),
-                            chalk.blueBright(serverUrl + warmPath),
-                        );
-                        return axios
-                            .get(serverUrl + warmPath)
-                            .catch(error =>
-                                console.error(
-                                    `Error warming ${serverUrl + warmPath}`,
-                                ),
-                            );
-                    }),
-                );
-            } catch (error) {
-                console.error(error);
-            }
-        }
-    };
 
     const staticTask = task('static:copy');
 
@@ -635,6 +621,9 @@ $assets: (
     };
 
     const dddStylesPartial = done => {
+        const currentPartial =
+            fs.existsSync(config.dest.modulesPartial) &&
+            fs.readFileSync(config.dest.modulesPartial, 'utf8');
         const SassPartialRegistry = ReactiumGulp.Utils.registryFactory(
             'SassPartialRegistry',
             'id',
@@ -651,12 +640,36 @@ $assets: (
                     return partial.replace('reactium_modules/', '+');
                 }
 
-                return path.relative(
-                    path.dirname(config.dest.modulesPartial),
-                    path.resolve(rootPath, partial),
-                );
+                return path
+                    .relative(
+                        path.dirname(config.dest.modulesPartial),
+                        path.resolve(rootPath, partial),
+                    )
+                    .split(/[\\\/]/g)
+                    .join(path.posix.sep);
             })
             .map(partial => partial.replace(/\.scss$/, ''))
+            // sort by directory basename
+            .sort((a, b) => {
+                const aBase = path
+                    .basename(path.dirname(a))
+                    .toLocaleLowerCase();
+                const bBase = path
+                    .basename(path.dirname(b))
+                    .toLocaleLowerCase();
+                if (aBase > bBase) return 1;
+                if (aBase < bBase) return -1;
+                return 0;
+            })
+            // sort by file basename
+            .sort((a, b) => {
+                const aBase = path.basename(a).toLocaleLowerCase();
+                const bBase = path.basename(b).toLocaleLowerCase();
+                if (aBase > bBase) return 1;
+                if (aBase < bBase) return -1;
+                return 0;
+            })
+            // sort by priority
             .sort((a, b) => {
                 const aMatch =
                     SassPartialRegistry.list.find(({ pattern }) =>
@@ -699,12 +712,15 @@ $assets: (
 {{/each}}
 `);
 
-        fs.ensureFileSync(config.dest.modulesPartial);
-        fs.writeFileSync(
-            config.dest.modulesPartial,
-            template(stylePartials),
-            'utf8',
-        );
+        const newPartial = template(stylePartials);
+        if (currentPartial !== newPartial) {
+            fs.ensureFileSync(config.dest.modulesPartial);
+            fs.writeFileSync(
+                config.dest.modulesPartial,
+                template(stylePartials),
+                'utf8',
+            );
+        }
         done();
     };
 
@@ -781,24 +797,52 @@ $assets: (
                   .pipe(gulp.dest(config.dest.assets));
 
     const watchFork = done => {
+        const watchers = {};
         // Watch for file changes
-        gulp.watch(config.watch.colors, gulp.task('styles:colors'));
-        gulp.watch(config.watch.pluginAssets, gulp.task('styles:pluginAssets'));
-        gulp.watch(config.watch.style, gulp.task('styles:compile'));
-        gulp.watch(config.src.styleDDD, gulp.task('styles:partials'));
+        watchers['styles:colors'] = gulp.watch(
+            config.watch.colors,
+            gulp.task('styles:colors'),
+        );
+        watchers['styles:pluginAssets'] = gulp.watch(
+            config.watch.pluginAssets,
+            gulp.task('styles:pluginAssets'),
+        );
+        watchers['styles:compile'] = gulp.watch(
+            config.watch.style,
+            gulp.task('styles:compile'),
+        );
+        watchers['styles:partials'] = gulp.watch(
+            config.src.styleDDD,
+            gulp.task('styles:partials'),
+        );
         gulpwatch(config.watch.markup, watcher);
         gulpwatch(config.watch.assets, watcher);
         const scriptWatcher = gulp.watch(
             config.watch.js,
             gulp.parallel(task('manifest')),
         );
+
+        watchLogger(watchers);
         done();
+    };
+
+    const watchLogger = watchers => {
+        Object.entries(watchers).forEach(([type, watcher]) => {
+            [
+                ['change', chalk.green(`[${type} change]`)],
+                ['add', chalk.green(`[${type} add]`)],
+                ['unlink', chalk.green(`[${type} delete]`)],
+            ].forEach(([eventName, label]) => {
+                watcher.on(eventName, changed => {
+                    console.log(label, changed);
+                });
+            });
+        });
     };
 
     const tasks = {
         apidocs,
-        local: local(),
-        'local:ssr': local({ ssr: true }),
+        local,
         assets,
         preBuild: noop,
         build: build(config),
@@ -821,9 +865,6 @@ $assets: (
         'serve-restart': serve({ open: false }),
         serviceWorker,
         sw,
-        ssg,
-        'ssg:flush': ssgFlush,
-        'ssg:warm': ssgWarm,
         static: staticTask,
         'static:copy': staticCopy,
         'styles:partials': dddStylesPartial,
