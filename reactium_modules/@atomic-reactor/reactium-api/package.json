@@ -3,14 +3,15 @@
     "version": "3.7.5"
   },
   "reactium": {
-    "version": "4.0.2"
+    "version": "5.0.0"
   },
   "name": "@atomic-reactor/reactium-api",
-  "version": "2.0.6",
+  "version": "5.0.0",
   "description": "API bindings for Reactium framework",
   "author": "Reactium LLC",
   "license": "MIT",
   "dependencies": {
+    "http-proxy-middleware": "^0.20.0",
     "parse": "^3.4.0",
     "socket.io-client": "^4.4.0"
   }
