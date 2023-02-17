@@ -1,15 +1,18 @@
 import SDK from '@atomic-reactor/reactium-sdk-core';
-import { api, config } from './actinium';
 import op from 'object-path';
 
 class APIRegistry extends SDK.Utils.Registry {
     constructor() {
         super('APIRegistry', 'name', SDK.Utils.Registry.MODES.CLEAN);
-        this.register({
-            name: 'Actinium',
-            api,
-            config,
-        });
+
+        if (actiniumAPIEnabled) {
+            const { api, config } = require('./actinium');
+            this.register({
+                name: 'Actinium',
+                api,
+                config,
+            });
+        }
     }
 
     api(name = 'Actinium') {
