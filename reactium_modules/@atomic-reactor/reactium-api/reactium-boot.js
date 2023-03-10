@@ -1,5 +1,5 @@
-const op = require('object-path');
 const proxy = require('http-proxy-middleware');
+
 const { Enums } = ReactiumBoot;
 
 const actiniumAPIEnabled = process.env.ACTINIUM_API_ENABLED !== 'off';
@@ -64,4 +64,22 @@ if (restAPI && actiniumProxyEnabled && proxyPath) {
         }),
         order: Enums.priority.highest,
     });
+}
+
+if (actiniumAppId && restAPI && actiniumAPIEnabled) {
+    const Parse = require('parse/node');
+
+    ReactiumBoot.Hook.register(
+        'sdk-init',
+        () => {
+            if (!global.Actinium) {
+                global.Actinium = Parse;
+                ReactiumBoot.API = Actinium;
+                Actinium.serverURL = restAPI;
+                Actinium.initialize(actiniumAppId);
+            }
+        },
+        ReactiumBoot.Enums.priority.highest,
+        'ACTINIUM',
+    );
 }
