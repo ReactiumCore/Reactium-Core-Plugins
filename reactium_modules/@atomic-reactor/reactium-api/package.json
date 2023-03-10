@@ -6,7 +6,7 @@
     "version": "5.0.0"
   },
   "name": "@atomic-reactor/reactium-api",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "API bindings for Reactium framework",
   "author": "Reactium LLC",
   "license": "MIT",
