@@ -17,7 +17,9 @@ if (Actinium) {
     const { host, protocol } = location;
 
     // on windows, this compiles incorrectly, so use the distribution version
-    const { io } = require('socket.io-client/dist/socket.io.js');
+    // Recently, this stopped working on Mac too, and the default "export" from UMD should
+    // work.
+    const io = require('socket.io-client/dist/socket.io.js');
 
     // proxied through express
     let ioURL = `${protocol}//${host}${restAPI}`;
