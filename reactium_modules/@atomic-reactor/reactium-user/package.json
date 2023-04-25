@@ -1,14 +1,14 @@
 {
-  "name": "@atomic-reactor/reactium-user",
-  "version": "1.0.1",
-  "description": "Actinium User API extension for Reactium framework",
-  "author": "Reactium LLC",
-  "license": "MIT",
-  "reactium": {
-    "version": "4.0.2"
-  },
   "actinium": {
     "version": "3.7.5"
   },
+  "reactium": {
+    "version": "4.0.2"
+  },
+  "name": "@atomic-reactor/reactium-user",
+  "version": "5.0.1",
+  "description": "Actinium User API extension for Reactium framework",
+  "author": "Reactium LLC",
+  "license": "MIT",
   "dependencies": {}
 }

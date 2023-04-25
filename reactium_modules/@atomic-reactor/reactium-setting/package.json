@@ -1,14 +1,14 @@
 {
-  "name": "@atomic-reactor/reactium-setting",
-  "version": "1.0.0",
-  "description": "Actinium Setting API extension for Reactium framework",
-  "author": "Reactium LLC",
-  "license": "MIT",
-  "reactium": {
-    "version": "4.0.2"
-  },
   "actinium": {
     "version": "3.7.5"
   },
+  "reactium": {
+    "version": "4.0.2"
+  },
+  "name": "@atomic-reactor/reactium-setting",
+  "version": "5.0.1",
+  "description": "Actinium Setting API extension for Reactium framework",
+  "author": "Reactium LLC",
+  "license": "MIT",
   "dependencies": {}
 }
