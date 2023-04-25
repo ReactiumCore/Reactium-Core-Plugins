@@ -157,6 +157,33 @@ const defaultManifestConfig = {
             exclude: [/\.ds_store/i, /\.core/i, /\.cli\//i, /src\/assets/],
         },
     },
+    domains: {
+        patterns: [
+            {
+                name: 'allDomains',
+                type: 'domain',
+                pattern: /domain.js$/,
+            },
+        ],
+        sourceMappings: [
+            {
+                from: 'src/app/',
+                to: '../src/app/',
+            },
+            {
+                from: '.core/',
+                to: '../.core/',
+            },
+            {
+                from: 'reactium_modules/',
+                to: '../reactium_modules/',
+            },
+            {
+                node_modules: true,
+                ignore: /^((?!reactium-plugin).)*$/,
+            },
+        ],
+    },
 };
 
 const overrides = config => {
@@ -179,7 +206,7 @@ const manifestConfig = overrides(defaultManifestConfig);
  */
 module.exports = {
     version,
-    semver: '^3.0.0',
+    semver: '^5.0.0',
     build: gulpConfig,
     update: {
         package: {
@@ -220,7 +247,7 @@ module.exports = {
                     'build:babel-reactium_modules':
                         'cross-env NODE_ENV=production babel reactium_modules --out-dir build/reactium_modules',
                     'build:babel-src':
-                        'cross-env NODE_ENV=production babel src --out-dir build/src',
+                        'cross-env NODE_ENV=production babel src --out-dir build/src --copy-files',
                     static: 'npm-run-all build:* && gulp static',
                     local: 'gulp local',
                 },

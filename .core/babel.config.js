@@ -61,7 +61,7 @@ ReactiumBabel.ModuleAliases = ReactiumBabel.Utils.registryFactory(
     ReactiumBabel.Utils.Registry.MODES.CLEAN,
 );
 ReactiumBabel.ModuleAliases.register('externals', {
-    path: './.tmp/externals-manifest',
+    path: './src/externals-manifest',
 });
 ReactiumBabel.ModuleAliases.register('manifest', {
     path: './src/manifest',
@@ -99,6 +99,9 @@ ReactiumBabel.env = {
         browsers: ['> 1%', 'IE 11'],
     },
 };
+
+if (!global.ReactiumWebpack) ReactiumBabel.env.targets = { node: '18' };
+
 ReactiumBabel.Hook.runSync('env', ReactiumBabel.env);
 
 /**

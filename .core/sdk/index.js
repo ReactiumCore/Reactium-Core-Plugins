@@ -13,7 +13,10 @@ import {
 } from '@atomic-reactor/reactium-sdk-core';
 
 import { AppContext } from './named-exports';
-
+import {
+    useDispatcherFactory,
+    useStateEffectFactory,
+} from './named-exports/useDispatcher';
 export * from '@atomic-reactor/reactium-sdk-core';
 export * from './named-exports';
 
@@ -57,4 +60,9 @@ const apiHandler = {
     },
 };
 
-export default new Proxy(SDK, apiHandler);
+const Reactium = new Proxy(SDK, apiHandler);
+
+export const useDispatcher = useDispatcherFactory(Reactium);
+export const useStateEffect = useStateEffectFactory(Reactium);
+
+export default Reactium;
