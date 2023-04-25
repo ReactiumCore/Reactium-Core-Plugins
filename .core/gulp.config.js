@@ -27,7 +27,12 @@ const defaultConfig = {
         js: ['src/app/**/*', 'reactium_modules/**/*'],
         markup: ['src/**/*.html', 'src/**/*.css', 'reactium_modules/**/*.css'],
         colors: ['src/**/*/colors.json'],
-        pluginAssets: ['src/app/**/plugin-assets.json'],
+        pluginAssets: [
+            'src/app/**/plugin-assets.json',
+            'src/**/style-assets.json',
+            '.core/**/style-assets.json',
+            'reactium_modules/**/style-assets.json',
+        ],
         restartWatches: [
             'src/**/assets/style/*.scss',
             '!src/**/assets/style/_*.scss',
@@ -54,7 +59,12 @@ const defaultConfig = {
     src: {
         app: 'src',
         colors: ['src/**/*/colors.json'],
-        pluginAssets: ['src/app/**/plugin-assets.json'],
+        pluginAssets: [
+            'src/app/**/plugin-assets.json',
+            'src/**/style-assets.json',
+            '.core/**/style-assets.json',
+            'reactium_modules/**/style-assets.json',
+        ],
         js: ['src/app/**/*'],
         json: ['src/**/*.json'],
         markup: ['src/**/*.html', 'src/**/*.css', 'reactium_modules/**/*.css'],
@@ -89,9 +99,10 @@ const defaultConfig = {
         includes: ['./node_modules'],
         appdir: path.resolve(__dirname, 'src/app'),
         rootdir: path.resolve(__dirname),
+        domainManifest: path.normalize(`${rootPath}/src/domains.js`),
         manifest: path.normalize(`${rootPath}/src/manifest.js`),
         externalsManifest: path.normalize(
-            `${rootPath}/.tmp/externals-manifest.js`,
+            `${rootPath}/src/externals-manifest.js`,
         ),
         reactiumModules: path.normalize(`${rootPath}/reactium_modules`),
     },
