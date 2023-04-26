@@ -5,7 +5,7 @@ const { Enums } = ReactiumBoot;
 const actiniumAPIEnabled = process.env.ACTINIUM_API_ENABLED !== 'off';
 const actiniumProxyEnabled = process.env.PROXY_ACTINIUM_API !== 'off';
 const proxyPath = process.env.PROXY_API_PATH || '/api';
-const restAPI = process.env.REST_API_URL || `http://localhost:9000${proxyPath}`;
+const restAPI = process.env.REST_API_URL || `http://127.0.0.1:9000${proxyPath}`;
 const actiniumAppId = process.env.ACTINIUM_APP_ID || 'Actinium';
 const logLevel = process.env.DEBUG === 'on' ? 'debug' : 'error';
 
