@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const globby = require('./globby-patch');
-const rootPath = path.resolve(__dirname, '..');
+const rootPath = path.resolve(__dirname, '../../..');
 
 const defaultConfig = {
     rootPath,
@@ -30,7 +30,6 @@ const defaultConfig = {
         pluginAssets: [
             'src/app/**/plugin-assets.json',
             'src/**/style-assets.json',
-            '.core/**/style-assets.json',
             'reactium_modules/**/style-assets.json',
         ],
         restartWatches: [
@@ -39,7 +38,6 @@ const defaultConfig = {
         ],
         style: [
             'src/**/*.scss',
-            '.core/**/*.scss',
             'reactium_modules/**/*.scss',
             '!{src/**/assets/style/*.scss}',
             '!{reactium_modules/**/assets/style/*.scss}',
@@ -62,7 +60,6 @@ const defaultConfig = {
         pluginAssets: [
             'src/app/**/plugin-assets.json',
             'src/**/style-assets.json',
-            '.core/**/style-assets.json',
             'reactium_modules/**/style-assets.json',
         ],
         js: ['src/app/**/*'],
@@ -70,10 +67,8 @@ const defaultConfig = {
         markup: ['src/**/*.html', 'src/**/*.css', 'reactium_modules/**/*.css'],
         style: [
             'src/**/*.scss',
-            '.core/**/*.scss',
             'reactium_modules/**/*.scss',
             '!{src/**/_*.scss}',
-            '!{.core/**/_*.scss}',
             '!{reactium_modules/**/_*.scss}',
         ],
         styleDDD: [
@@ -81,7 +76,6 @@ const defaultConfig = {
             'reactium_modules/**/*/_reactium-style*.scss',
         ],
         assets: [
-            '.core/assets/**/*',
             'src/**/assets/**/*',
             'reactium_modules/**/assets/**/*',
             'src/assets/**/*',
@@ -97,8 +91,8 @@ const defaultConfig = {
             '!public/assets/**/*.gz',
         ],
         includes: ['./node_modules'],
-        appdir: path.resolve(__dirname, 'src/app'),
-        rootdir: path.resolve(__dirname),
+        appdir: path.resolve(rootPath, 'src/app'),
+        rootdir: rootPath,
         domainManifest: path.normalize(`${rootPath}/src/domains.js`),
         manifest: path.normalize(`${rootPath}/src/manifest.js`),
         externalsManifest: path.normalize(
@@ -122,11 +116,11 @@ const defaultConfig = {
     },
     umd: {
         defaultWorker: path.resolve(
-            __dirname,
-            '../public/assets/js/umd/service-worker/service-worker.js',
+            rootPath,
+            'public/assets/js/umd/service-worker/service-worker.js',
         ),
         manifest: path.normalize(`${rootPath}/.tmp/umd-manifest.json`),
-        outputPath: path.resolve(__dirname, '../public/assets/js/umd'),
+        outputPath: path.resolve(rootPath, 'public/assets/js/umd'),
     },
     sw: {
         globDirectory: 'public',
@@ -138,7 +132,7 @@ const defaultConfig = {
         },
     },
     docs: {
-        src: '.core,src/app,node_modules/@atomic-reactor',
+        src: 'src/app,reactium_modules/@atomic-reactor',
         dest: ['public/docs', 'docs'],
         verbose: false,
     },
