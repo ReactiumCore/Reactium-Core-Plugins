@@ -5,7 +5,9 @@ const webpack = require('webpack');
 const globby = require('./globby-patch');
 const chalk = require('chalk');
 const path = require('path');
+const rootPath = path.resolve(__dirname, '../../..');
 
+global.rootPath = rootPath;
 global.ReactiumWebpack = ReactiumWebpack;
 
 let artifacts = {};

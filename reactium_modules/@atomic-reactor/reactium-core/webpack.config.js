@@ -39,7 +39,7 @@ module.exports = config => {
     sdk.target = 'web';
     sdk.output = {
         publicPath: '/assets/js/',
-        path: path.resolve(__dirname, dest),
+        path: path.resolve(rootPath, dest),
         filename,
         asyncChunks: true,
     };
@@ -104,7 +104,7 @@ module.exports = config => {
     sdk.addIgnore('core-index', /reactium-core\/index.mjs/);
     sdk.addIgnore('gulp', /reactium-core\/gulp/);
     sdk.addIgnore('reactium-config', /reactium-core\/reactium-config.js$/);
-    sdk.addIgnore('webpack-sdk', /webpack.sdk/);
+    sdk.addIgnore('webpack-sdk', /reactium-core\/webpack\.sdk/);
     sdk.addIgnore('core-configs', /reactium-core\/.*?\.config/);
     sdk.addIgnore('core-cli', /reactium-core\/.cli\//);
     sdk.addIgnore('project-cli', /\.cli/);

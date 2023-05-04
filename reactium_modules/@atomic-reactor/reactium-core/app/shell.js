@@ -8,6 +8,8 @@ const onLoaded = () => {
     }
 };
 
+const shellRoot = document.querySelector('[data-reactium-shell]');
+
 export const Shell = async (
     LoadingComponent,
     loadCb = onLoaded,
@@ -28,9 +30,11 @@ export const Shell = async (
         return <Loading ref={window.LoadingRef} />;
     };
 
-    const something = createRoot(
-        document.body.appendChild(document.createElement('div')),
-    ).render(<Shell />);
+    try {
+        createRoot(shellRoot).render(<Shell />);
+    } catch (error) {
+        console.error(error);
+    }
 
     const { App } = await import('./index');
     await App();

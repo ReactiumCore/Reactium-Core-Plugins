@@ -95,7 +95,6 @@
     "gulp4-run-sequence": "^1.0.1",
     "handlebars": "^4.7.7",
     "husky": "^3.1.0",
-    "ignore-loader": "^0.1.2",
     "lint-staged": "^9.4.3",
     "module-alias": "^2.2.2",
     "node-polyfill-webpack-plugin": "^2.0.1",

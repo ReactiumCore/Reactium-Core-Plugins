@@ -158,10 +158,15 @@ const normalizeAssets = assets => _.flatten([assets]);
         (req, AppBindings) => {
             AppBindings.register('router', {
                 template: () => {
-                    const binding = ` <div data-reactium-bind="App"></div>`;
+                    const binding = '<div data-reactium-bind="App"></div>';
                     return binding;
                 },
-                requestParams: ['content'],
+            });
+            AppBindings.register('shell-bind-point', {
+                template: () => {
+                    const binding = '<div data-reactium-shell></div>';
+                    return binding;
+                },
             });
         },
         ReactiumBoot.Enums.priority.highest,

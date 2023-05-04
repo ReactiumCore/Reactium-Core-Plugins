@@ -102,7 +102,7 @@ const defaultConfig = {
     },
     dest: {
         dist: 'public',
-        js: '../public/assets/js',
+        js: 'public/assets/js',
         markup: 'public',
         style: 'public/assets/style',
         assets: 'public/assets',

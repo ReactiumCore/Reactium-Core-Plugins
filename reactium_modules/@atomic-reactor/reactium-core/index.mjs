@@ -84,11 +84,11 @@ const registeredMiddleware = async () => {
 
     // serve the static files out of ./public or specified directory
     global.staticAssets =
-        process.env.PUBLIC_DIRECTORY || path.resolve(process.cwd(), 'public');
-
+        process.env.PUBLIC_DIRECTORY || path.resolve(rootPath, 'public');
+    console.log('global.staticAssets', global.staticAssets)
     global.staticHTML =
         process.env.PUBLIC_HTML ||
-        path.resolve(process.cwd(), 'public/static-html');
+        path.resolve(rootPath, 'public/static-html');
 
     ReactiumBoot.Server.Middleware.register('static', {
         name: 'static',
