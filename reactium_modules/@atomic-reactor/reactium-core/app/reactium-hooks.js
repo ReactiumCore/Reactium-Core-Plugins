@@ -1,14 +1,16 @@
-import 'reactium-core/components/Router/reactium-hooks';
+import '@atomic-reactor/reactium-core/components/Router/reactium-hooks';
 import op from 'object-path';
 import _ from 'underscore';
 import deps from 'dependencies';
 
-import('reactium-core/sdk').then(
+import('@atomic-reactor/reactium-core/sdk').then(
     async ({ default: Reactium, ReactiumSyncState }) => {
         Reactium.Hook.register(
             'component-bindings',
             async context => {
-                const { hookableComponent } = await import('reactium-core/sdk');
+                const { hookableComponent } = await import(
+                    '@atomic-reactor/reactium-core/sdk'
+                );
 
                 // Placeholder for the bindable elements
                 const bindPoints = [];
@@ -96,7 +98,7 @@ import('reactium-core/sdk').then(
             'app-router',
             async () => {
                 const { Router } = await import(
-                    'reactium-core/components/Router'
+                    '@atomic-reactor/reactium-core/components/Router'
                 );
                 Reactium.Component.register('Router', Router);
                 console.log('Defining Router.');

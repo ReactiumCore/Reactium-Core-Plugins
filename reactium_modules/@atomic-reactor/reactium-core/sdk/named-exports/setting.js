@@ -11,7 +11,7 @@ import { useAsyncEffect } from '@atomic-reactor/reactium-sdk-core';
  * @apiGroup ReactHook
  * @apiExample Usage
 import React from 'react';
-import { useSettingGroup } from 'reactium-core/sdk';
+import { useSettingGroup } from '@atomic-reactor/reactium-core/sdk';
 import op from 'object-path';
 
 export default () => {
@@ -56,7 +56,7 @@ export const useSettingGroup = group => {
         updateGetter(getter + 1);
     };
 
-    const { default: SDK } = require('reactium-core/sdk');
+    const { default: SDK } = require('@atomic-reactor/reactium-core/sdk');
 
     const updateSettingRef = settingGroup => {
         settingRef.current = settingGroup;

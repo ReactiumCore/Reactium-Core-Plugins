@@ -16,7 +16,7 @@ import { Registry, registryFactory } from '@atomic-reactor/reactium-sdk-core';
  * @apiParam {Method} unregister `reg.unregister(id)` pass an identifier to unregister an object. When in HISTORY mode (default), previous registration will be retained, but the object will not be listed. In CLEAN mode, the previous registrations will be removed, unless protected.
  * @apiExample reactium-hooks.js
 // Example of Registering Material UI Theme
-import Reactium from 'reactium-core/sdk';
+import Reactium from '@atomic-reactor/reactium-core/sdk';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { purple } from '@mui/material/colors';
 

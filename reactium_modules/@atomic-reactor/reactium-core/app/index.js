@@ -10,7 +10,9 @@ import 'externals';
 
 const loadFramework = async () => {
     console.log('Loading Core SDK');
-    const { default: Reactium } = await import('reactium-core/sdk');
+    const { default: Reactium } = await import(
+        '@atomic-reactor/reactium-core/sdk'
+    );
 
     console.log('Initializing Application Hooks');
 
@@ -101,7 +103,7 @@ export const App = async () => {
         hookableComponent,
         Zone,
         AppContexts,
-    } = await import('reactium-core/sdk');
+    } = await import('@atomic-reactor/reactium-core/sdk');
 
     await loadFramework();
 

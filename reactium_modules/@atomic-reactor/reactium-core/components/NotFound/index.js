@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import Reactium, { __, Zone } from 'reactium-core/sdk';
+import Reactium, { __, Zone } from '@atomic-reactor/reactium-core/sdk';
 
 const DefaultComponent = () => {
     const comps = Reactium.Zone.getZoneComponents('not-found');

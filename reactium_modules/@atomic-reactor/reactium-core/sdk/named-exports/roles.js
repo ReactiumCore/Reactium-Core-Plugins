@@ -16,7 +16,7 @@ export const useRoles = search => {
         ref.current = roles;
         update(uuid());
     };
-    const { default: SDK } = require('reactium-core/sdk');
+    const { default: SDK } = require('@atomic-reactor/reactium-core/sdk');
 
     useAsyncEffect(
         async isMounted => {

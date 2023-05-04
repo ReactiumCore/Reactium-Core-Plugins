@@ -1,4 +1,4 @@
-import { Context } from 'reactium-core/components/WindowProvider';
+import { Context } from '@atomic-reactor/reactium-core/components/WindowProvider';
 import { useContext, useEffect, useState, useRef } from 'react';
 import SDK, {
     breakpoint,
@@ -19,7 +19,7 @@ const { Utils } = SDK;
  Your component will automatically be rendered inside the WindowProvider, which will provide the correct `window` and `document`
  objects. See `useWindowSize()` for the most important use case.
  @apiExample BrowserComponent.js
-import Reactium, { useWindow } from 'reactium-core/sdk';
+import Reactium, { useWindow } from '@atomic-reactor/reactium-core/sdk';
 import React, { useEffect } from 'react';
 import op from 'object-path';
 
@@ -40,7 +40,7 @@ export default () => {
     }, []);
 };
 
- // import WindowProvider from 'reactium-core/components/WindowProvider';
+ // import WindowProvider from '@atomic-reactor/reactium-core/components/WindowProvider';
 
  * @apiName useWindow
  * @apiGroup ReactHook
@@ -126,7 +126,7 @@ export const useBreakpoint = width => {
  * @apiGroup ReactHook
  * @apiExample ResponsiveComponent.js
  import React from 'react';
- import { useWindowSize } from 'reactium-core/sdk';
+ import { useWindowSize } from '@atomic-reactor/reactium-core/sdk';
 
  const Mobile = () => {
     return (

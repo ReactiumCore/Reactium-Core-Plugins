@@ -382,7 +382,7 @@ class Routing {
  * @apiExample Example Usage:
 import React from 'react';
 import op from 'object-path';
-import Reactium, { useSelect } from 'reactium-core/sdk';
+import Reactium, { useSelect } from '@atomic-reactor/reactium-core/sdk';
 
 // A new component subscribing to Redux state.myPlugin.name
 const HelloYou = () => {

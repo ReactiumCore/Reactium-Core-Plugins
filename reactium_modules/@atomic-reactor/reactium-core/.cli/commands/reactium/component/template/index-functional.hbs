@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useSyncState } from 'reactium-core/sdk';
+import { useSyncState } from '@atomic-reactor/reactium-core/sdk';
 import React, { forwardRef, useImperativeHandle } from 'react';
 
 /**

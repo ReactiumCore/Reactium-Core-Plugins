@@ -1,6 +1,6 @@
 import op from 'object-path';
 import _ from 'underscore';
-import Reactium, { isBrowserWindow } from 'reactium-core/sdk';
+import Reactium, { isBrowserWindow } from '@atomic-reactor/reactium-core/sdk';
 import manifestLoader from 'manifest';
 
 class ReactiumDependencies {

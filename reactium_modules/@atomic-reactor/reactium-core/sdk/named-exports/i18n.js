@@ -10,7 +10,7 @@ import i18n from '../i18n';
  * @apiGroup Translation
  * @apiExample Usage
 import React from 'react';
-import { __ } = 'reactium-core/sdk';
+import { __ } = '@atomic-reactor/reactium-core/sdk';
 
 export default () => {
     return (
@@ -33,7 +33,7 @@ export const __ = (...params) => i18n.getJed().gettext(...params);
  * @apiGroup Translation
  * @apiExample Usage
 import React from 'react';
-import { _n } = 'reactium-core/sdk';
+import { _n } = '@atomic-reactor/reactium-core/sdk';
 
 export default props => {
     const count = props.count;

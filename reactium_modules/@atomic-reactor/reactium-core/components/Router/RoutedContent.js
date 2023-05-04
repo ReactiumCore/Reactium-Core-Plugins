@@ -1,5 +1,8 @@
 import React, { useEffect } from 'react';
-import Reactium, { useRouting, useSyncState } from 'reactium-core/sdk';
+import Reactium, {
+    useRouting,
+    useSyncState,
+} from '@atomic-reactor/reactium-core/sdk';
 import { Route } from 'react-router';
 import op from 'object-path';
 

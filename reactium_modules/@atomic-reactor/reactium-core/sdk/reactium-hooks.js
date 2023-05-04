@@ -1,4 +1,4 @@
-import Reactium, { Hook, Enums } from 'reactium-core/sdk';
+import Reactium, { Hook, Enums } from '@atomic-reactor/reactium-core/sdk';
 
 Enums.priority.core = Enums.priority.highest - 1000;
 

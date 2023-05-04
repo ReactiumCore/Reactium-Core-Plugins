@@ -1,7 +1,7 @@
 import Reactium, {
     hookableComponent,
     isBrowserWindow,
-} from 'reactium-core/sdk';
+} from '@atomic-reactor/reactium-core/sdk';
 import _ from 'underscore';
 import RoutedContent from './RoutedContent';
 import deps from 'dependencies';

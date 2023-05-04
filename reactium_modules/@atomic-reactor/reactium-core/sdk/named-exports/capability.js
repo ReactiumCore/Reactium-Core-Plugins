@@ -14,7 +14,7 @@ export const useCapabilityCheck = (capabilities, strict = true) => {
     const allowedRef = useRef(false);
     const [, update] = useState(new Date());
     const caps = _.uniq(_.compact(_.flatten([capabilities])));
-    const { default: SDK } = require('reactium-core/sdk');
+    const { default: SDK } = require('@atomic-reactor/reactium-core/sdk');
 
     useAsyncEffect(
         async isMounted => {
@@ -47,7 +47,7 @@ export const useCapability = capability => {
         ref.current = cap;
         update(new Date());
     };
-    const { default: SDK } = require('reactium-core/sdk');
+    const { default: SDK } = require('@atomic-reactor/reactium-core/sdk');
 
     useAsyncEffect(
         async isMounted => {
