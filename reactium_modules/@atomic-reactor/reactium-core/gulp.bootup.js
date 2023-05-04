@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const gulp = require('gulp');
 const globby = require('./globby-patch').sync;
-const rootPath = path.resolve(__dirname, '..');
+const rootPath = path.resolve(__dirname, '../../..');
 const config = require('./gulp.config');
 const webpackConfig = require('./webpack.config')(config);
 const chalk = require('chalk');
@@ -24,7 +24,6 @@ ReactiumGulp.Enums.style = {
 
 // Load reactium-gulp DDD artifact from plugin sources
 globby([
-    `${rootPath}/.core/**/reactium-gulp.js`,
     `${rootPath}/src/**/reactium-gulp.js`,
     `${rootPath}/reactium_modules/**/reactium-gulp.js`,
     `${rootPath}/node_modules/**/reactium-plugin/**/reactium-gulp.js`,
