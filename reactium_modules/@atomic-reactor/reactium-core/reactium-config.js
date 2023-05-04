@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const globby = require('./globby-patch');
-const rootPath = path.resolve(__dirname, '..');
+const rootPath = path.resolve(__dirname, '../../..');
 const gulpConfig = require('./gulp.config');
 
 const version = '5.0.0-alpha-2';
@@ -55,9 +55,9 @@ const defaultLibraryExternals = {
         defaultAlias: 'ReactDOM',
     },
     Reactium: {
-        externalName: '/reactium-core/sdk$/',
+        externalName: '/@atomic-reactor/reactium-core/sdk$/',
         // relative to src/manifest.js
-        requirePath: 'reactium-core/sdk',
+        requirePath: '@atomic-reactor/reactium-core/sdk',
         // to provide both es6 named exports and Reactium default alias
         defaultAlias: 'Reactium',
     },
@@ -112,12 +112,8 @@ const defaultManifestConfig = {
             to: '../src/app/',
         },
         {
-            from: '.core/',
-            to: 'reactium-core/',
-        },
-        {
             from: 'reactium_modules/',
-            to: '../reactium_modules/',
+            to: '',
         },
         {
             node_modules: true,
@@ -149,7 +145,7 @@ const defaultManifestConfig = {
             },
             {
                 from: 'reactium_modules/',
-                to: path.resolve(rootPath, 'reactium_modules') + '/',
+                to: '',
             },
         ],
         searchParams: {
@@ -171,12 +167,8 @@ const defaultManifestConfig = {
                 to: '../src/app/',
             },
             {
-                from: '.core/',
-                to: '../.core/',
-            },
-            {
                 from: 'reactium_modules/',
-                to: '../reactium_modules/',
+                to: '',
             },
             {
                 node_modules: true,

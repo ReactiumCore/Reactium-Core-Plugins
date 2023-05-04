@@ -7,7 +7,6 @@ const prettier = require('prettier');
 const chalk = require('chalk');
 const diff = require('fast-diff');
 const hb = require('handlebars');
-const rootPath = path.resolve(__dirname, '../..');
 
 // flatten a tree of files from directory-tree module
 const flattenRegistry = (registry = { children: [] }, manifest = []) => {
@@ -91,7 +90,7 @@ const find = (searches = [], sourceMappings = [], searchParams = {}) => {
                     const subPackage = path.resolve(
                         reactiumModuleDir,
                         reactiumModule,
-                        '_npm/package.json',
+                        'package.json',
                     );
                     if (fs.existsSync(subPackage)) {
                         modules = _.uniq(
@@ -123,9 +122,9 @@ const find = (searches = [], sourceMappings = [], searchParams = {}) => {
                 }
             });
         } else if (op.has(sourceMapping, 'from')) {
-            sources(sourceMapping.from, params).forEach(file =>
-                files.push(file),
-            );
+            sources(sourceMapping.from, params).forEach(file => {
+                files.push(file);
+            });
         }
 
         files.forEach(fileObj => {
@@ -230,8 +229,6 @@ const regenManifest = function({
 const domainRegExp = new RegExp('/([A-Za-z_0-9-]+?)[\\/][A-Za-z_0-9-]+$');
 const fileToDomain = file => {
     let [, domain] = file.match(domainRegExp) || [];
-    const relativeOriginalPath = path.resolve(rootPath, file);
-
     return domain;
 };
 

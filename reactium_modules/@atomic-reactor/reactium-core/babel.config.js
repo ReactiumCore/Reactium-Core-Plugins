@@ -2,7 +2,7 @@ const ReactiumBabel = require('@atomic-reactor/reactium-sdk-core').default;
 const fs = require('fs');
 const path = require('path');
 const globby = require('./globby-patch').sync;
-const rootPath = path.resolve(__dirname, '..');
+const rootPath = path.resolve(__dirname, '../../..');
 const chalk = require('chalk');
 const semver = require('semver');
 const op = require('object-path');
@@ -38,7 +38,6 @@ global.ReactiumBabel = ReactiumBabel;
 
 // Load reactium-gulp DDD artifact from plugin sources
 globby([
-    `${rootPath}/.core/**/reactium-babel.js`,
     `${rootPath}/src/**/reactium-babel.js`,
     `${rootPath}/reactium_modules/**/reactium-babel.js`,
     `${rootPath}/node_modules/**/reactium-plugin/**/reactium-babel.js`,
@@ -71,16 +70,13 @@ ReactiumBabel.ModuleAliases.register('components', {
     path: './src/app/components',
 });
 ReactiumBabel.ModuleAliases.register('reactium-core', {
-    path: './.core',
+    path: './reactium_modules/@atomic-reactor/reactium-core',
 });
 ReactiumBabel.ModuleAliases.register('reactium_modules', {
     path: './reactium_modules',
 });
 ReactiumBabel.ModuleAliases.register('dependencies', {
-    path: './.core/dependencies',
-});
-ReactiumBabel.ModuleAliases.register('toolkit', {
-    path: './src/app/toolkit',
+    path: './reactium_modules/@atomic-reactor/reactium-core/dependencies',
 });
 ReactiumBabel.ModuleAliases.register('reactium-translations', {
     path: './src/reactium-translations',

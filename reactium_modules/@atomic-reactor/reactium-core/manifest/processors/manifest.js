@@ -1,7 +1,7 @@
 const op = require('object-path');
 const fs = require('fs');
 const path = require('path');
-const rootPath = path.resolve(__dirname, '../../..');
+const rootPath = path.resolve(__dirname, '../../../../..');
 const chalk = require('chalk');
 module.exports = data => {
     const explicitDomains = require(path.resolve(rootPath, 'src/domains.js'));
