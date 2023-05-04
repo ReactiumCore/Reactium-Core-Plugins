@@ -358,7 +358,7 @@ const startServer = async () => {
     }
 };
 
-const bootup = async () => {
+export const start = async () => {
     const logger = console;
     try {
         await globals();
@@ -367,5 +367,3 @@ const bootup = async () => {
         console.error('Error on server startup:', error);
     }
 };
-
-bootup();

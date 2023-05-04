@@ -4,7 +4,7 @@
   "description": "A framework for creating React + Redux apps using the domain driven design (DDD) paradigm.",
   "main": "index.js",
   "scripts": {
-    "start": "node reactium_modules/@atomic-reactor/reactium-core/index.mjs",
+    "start": "node src/index.mjs",
     "build": "cross-env NODE_ENV=production gulp",
     "heroku-prebuild": "npx reactium install",
     "static": "npm-run-all build:* && gulp static",

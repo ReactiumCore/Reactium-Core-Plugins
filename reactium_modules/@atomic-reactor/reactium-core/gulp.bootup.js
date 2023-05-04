@@ -11,7 +11,7 @@ const chalk = require('chalk');
 require('./reactium.log.cjs');
 
 global.ReactiumGulp = ReactiumGulp;
-
+global.rootPath = rootPath;
 ReactiumGulp.Enums.style = {
     MIXINS: -1000,
     VARIABLES: -900,

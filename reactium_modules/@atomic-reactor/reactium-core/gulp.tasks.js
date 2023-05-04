@@ -20,7 +20,6 @@ const chalk = require('chalk');
 const reactiumConfig = require('./reactium-config');
 const { regenManifest } = require('./manifest/manifest-tools');
 const umdWebpackGenerator = require('./umd.webpack.config');
-const rootPath = path.resolve(__dirname, '..');
 const { fork, spawn, execSync } = require('child_process');
 const { File, FileReader } = require('file-api');
 const handlebars = require('handlebars');
@@ -224,12 +223,7 @@ const reactium = (gulp, config, webpackConfig) => {
 
         command(
             'node',
-            [
-                crossEnvBin,
-                'NODE_ENV=development',
-                'nodemon',
-                './.core/index.mjs',
-            ],
+            [crossEnvBin, 'NODE_ENV=development', 'nodemon', './src/index.mjs'],
             done,
             { stdin: 'inherit' },
         );
