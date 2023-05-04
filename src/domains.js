@@ -19,13 +19,15 @@ module.exports = {
         LoadingSpinner: {
             name: 'LoadingSpinner',
             implied: 'Loading',
-            original: '.core/components/Loading/domain.js',
+            original:
+                'reactium_modules/@atomic-reactor/reactium-core/components/Loading/domain.js',
         },
     },
     relative: {
         'src/app/api': 'API',
         'src/app/components/TestSvg': 'TestSvg',
         'src/app/components/Welcome': 'Welcome',
-        '.core/components/Loading': 'LoadingSpinner',
+        'reactium_modules/@atomic-reactor/reactium-core/components/Loading':
+            'LoadingSpinner',
     },
 };

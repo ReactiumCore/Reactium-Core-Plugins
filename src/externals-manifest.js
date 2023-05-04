@@ -15,7 +15,9 @@ if (isBrowserWindow()) {
     window['react'] = require('react');
     window['react-router-dom'] = require('react-router-dom');
     window['react-dom'] = require('react-dom');
-    window['reactium-core/sdk'] = require('reactium-core/sdk');
+    window[
+        '@atomic-reactor/reactium-core/sdk'
+    ] = require('@atomic-reactor/reactium-core/sdk');
     window['semver'] = require('semver');
     window['shallow-equals'] = require('shallow-equals');
     window['underscore'] = require('underscore');
@@ -23,5 +25,5 @@ if (isBrowserWindow()) {
     window['xss'] = require('xss');
     window['React'] = window['react'];
     window['ReactDOM'] = window['react-dom'];
-    window['Reactium'] = window['reactium-core/sdk'];
+    window['Reactium'] = window['@atomic-reactor/reactium-core/sdk'];
 }
