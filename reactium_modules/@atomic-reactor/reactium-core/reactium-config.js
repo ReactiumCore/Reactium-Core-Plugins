@@ -4,7 +4,7 @@ const globby = require('./globby-patch');
 const rootPath = path.resolve(__dirname, '../../..');
 const gulpConfig = require('./gulp.config');
 
-const version = '5.0.0-alpha-2';
+const version = '5.0.0';
 
 const defaultLibraryExternals = {
     axios: {
@@ -362,6 +362,24 @@ module.exports = {
                     version: '>=3.6.0',
                     destination: '/.dockerignore',
                     source: '/tmp/update/.dockerignore',
+                },
+                {
+                    overwrite: true,
+                    version: '>=5.0.0',
+                    destination: '/src/index.mjs',
+                    source: '/tmp/update/src/index.mjs',
+                },
+                {
+                    overwrite: true,
+                    version: '>=5.0.0',
+                    destination: '/gulpfile.js',
+                    source: '/tmp/update/gulpfile.js',
+                },
+                {
+                    overwrite: true,
+                    version: '>=5.0.0',
+                    destination: '/babel.config.js',
+                    source: '/tmp/update/babel.config.js',
                 },
             ],
             remove: [],
