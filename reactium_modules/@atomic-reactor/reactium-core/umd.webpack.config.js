@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const globby = require('./globby-patch');
 const op = require('object-path');
-const rootPath = path.resolve(__dirname, '..');
 const env = process.env.NODE_ENV || 'development';
 const CompressionPlugin = require('compression-webpack-plugin');
 const webpack = require('webpack');
@@ -12,7 +11,6 @@ const overrides = (umd, config) => {
     globby
         .sync([
             './umd.webpack.override.js',
-            './node_modules/**/reactium-plugin/umd.webpack.override.js',
             './src/**/umd.webpack.override.js',
             './reactium_modules/**/umd.webpack.override.js',
         ])

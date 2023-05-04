@@ -74,12 +74,7 @@ class WebpackReactiumWebpack {
         if (op.get(artifacts, [ddd])) return;
 
         globby
-            .sync([
-                `./${ddd}`,
-                `./node_modules/**/reactium-plugin/${ddd}`,
-                `./src/**/${ddd}`,
-                `./reactium_modules/**/${ddd}`,
-            ])
+            .sync([`./src/**/${ddd}`, `./reactium_modules/**/${ddd}`])
             .forEach(file => {
                 try {
                     require(path.resolve(file));

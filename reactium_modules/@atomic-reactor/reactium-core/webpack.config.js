@@ -4,24 +4,16 @@ const fs = require('fs');
 const _ = require('underscore');
 const path = require('path');
 const globby = require('./globby-patch');
-const webpack = require('webpack');
 const CompressionPlugin = require('compression-webpack-plugin');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const env = process.env.NODE_ENV || 'development';
-const rootPath = path.resolve(__dirname, '..');
 const chalk = require('chalk');
 const WebpackSDK = require('./webpack.sdk');
-
-let defines = {};
-if (fs.existsSync(`${rootPath}/src/app/server/defines.js`)) {
-    defines = require(`${rootPath}/src/app/server/defines.js`);
-}
 
 const overrides = config => {
     globby
         .sync([
             './webpack.override.js',
-            './node_modules/**/reactium-plugin/webpack.override.js',
             './src/**/webpack.override.js',
             './reactium_modules/**/webpack.override.js',
         ])
@@ -60,25 +52,6 @@ module.exports = config => {
         sdk.setNoCodeSplitting();
     }
 
-    Object.keys(defines).forEach(key => {
-        if (key !== 'process.env') {
-            config.defines[key] = JSON.stringify(defines[key]);
-        }
-    });
-
-    config.defines['process.env'] = {
-        NODE_ENV: JSON.stringify(env),
-    };
-
-    if ('process.env' in defines) {
-        Object.keys(defines['process.env']).forEach(key => {
-            config.defines['process.env'][key] = JSON.stringify(
-                defines['process.env'][key],
-            );
-        });
-    }
-
-    sdk.addPlugin('defines', new webpack.DefinePlugin(config.defines));
     sdk.addPlugin(
         'node-polyfills',
         new NodePolyfillPlugin({
@@ -126,14 +99,14 @@ module.exports = config => {
     sdk.addIgnore('png', /\.png$/);
     sdk.addIgnore('jpg', /\.jpg$/);
     sdk.addIgnore('gif', /\.gif$/);
-    sdk.addIgnore('server-src', /\.core\/server/);
-    sdk.addIgnore('manifest-tools', /\.core\/manifest/);
-    sdk.addIgnore('core-index', /\.core\/index.js/);
-    sdk.addIgnore('gulp', /\.core\/gulp/);
-    sdk.addIgnore('reactium-config', /\.core\/reactium-config.js$/);
+    sdk.addIgnore('server-src', /\reactium-core\/server/);
+    sdk.addIgnore('manifest-tools', /\reactium-core\/manifest/);
+    sdk.addIgnore('core-index', /\reactium-core\/index.js/);
+    sdk.addIgnore('gulp', /\reactium-core\/gulp/);
+    sdk.addIgnore('reactium-config', /\reactium-core\/reactium-config.js$/);
     sdk.addIgnore('webpack-sdk', /webpack.sdk/);
-    sdk.addIgnore('core-configs', /\.core\/.*?\.config/);
-    sdk.addIgnore('core-cli', /\.core\/.cli\//);
+    sdk.addIgnore('core-configs', /\reactium-core\/.*?\.config/);
+    sdk.addIgnore('core-cli', /\reactium-core\/.cli\//);
     sdk.addIgnore('project-cli', /\.cli/);
     sdk.addIgnore('server-app', /src\/app\/server/);
     sdk.addIgnore('arcli-install', /arcli-install.js$/);
