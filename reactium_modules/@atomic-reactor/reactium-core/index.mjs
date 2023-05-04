@@ -22,7 +22,7 @@ import { dirname } from '@atomic-reactor/dirname';
 const __dirname = dirname(import.meta.url);
 const globby = globbyPatched.sync;
 
-global.rootPath = path.resolve(__dirname, '..');
+global.rootPath = path.resolve(__dirname, '../../..');
 
 global.app = express();
 
