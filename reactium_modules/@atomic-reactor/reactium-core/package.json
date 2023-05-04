@@ -6,7 +6,7 @@
     "version": "5.0.0"
   },
   "name": "@atomic-reactor/reactium-core",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "Reactium Core Module",
   "dependencies": {
     "@atomic-reactor/dirname": "^1.0.2",

@@ -232,8 +232,8 @@ module.exports = {
             },
             scripts: {
                 add: {
-                    start: 'node .core/index.mjs',
-                    build: 'npm-run-all build:*',
+                    start: 'node src/index.mjs',
+                    build: 'cross-env NODE_ENV=production gulp',
                     local: 'gulp local',
                 },
                 remove: [
