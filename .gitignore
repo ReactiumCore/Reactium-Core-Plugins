@@ -88,3 +88,5 @@ src/manifest.js
 
 # Translation .mo
 *.mo
+webpack-manifest.json
+externals-manifest.js
