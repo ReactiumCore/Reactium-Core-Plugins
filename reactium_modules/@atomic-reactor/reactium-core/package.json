@@ -1,4 +1,10 @@
 {
+  "actinium": {
+    "version": "5.0.0"
+  },
+  "reactium": {
+    "version": "5.0.0"
+  },
   "name": "@atomic-reactor/reactium-core",
   "version": "5.0.0",
   "description": "Reactium Core Module",
