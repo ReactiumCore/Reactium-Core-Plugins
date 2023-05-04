@@ -1,5 +1,4 @@
 const ReactiumBabel = require('@atomic-reactor/reactium-sdk-core').default;
-const fs = require('fs');
 const path = require('path');
 const globby = require('./globby-patch').sync;
 const rootPath = path.resolve(__dirname, '../../..');
@@ -40,7 +39,6 @@ global.ReactiumBabel = ReactiumBabel;
 globby([
     `${rootPath}/src/**/reactium-babel.js`,
     `${rootPath}/reactium_modules/**/reactium-babel.js`,
-    `${rootPath}/node_modules/**/reactium-plugin/**/reactium-babel.js`,
 ]).forEach(item => {
     const p = path.normalize(item);
     try {

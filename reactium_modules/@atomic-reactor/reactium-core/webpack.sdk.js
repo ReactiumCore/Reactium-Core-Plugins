@@ -151,8 +151,12 @@ class WebpackReactiumWebpack {
         this.rules.register(id, { rule });
     }
 
-    addIgnore(id, test) {
-        this.ignores.register(id, { test });
+    addIgnore(id, resourceRegExp, contextRegExp) {
+        const config = { resourceRegExp };
+        if (contextRegExp) config.contextRegExp = contextRegExp;
+        this.plugins.register(`ignore-${id}`, {
+            plugin: new webpack.IgnorePlugin(config),
+        });
     }
 
     addPlugin(id, plugin) {
@@ -354,9 +358,7 @@ class WebpackReactiumWebpack {
             optimization: this.optimization,
             externals: this.getExternals(),
             module: {
-                rules: _.compact(
-                    [...this.getRules()].concat(this.getIgnores()),
-                ),
+                rules: _.compact([...this.getRules()]),
             },
             plugins: this.getPlugins(),
             ...this.overrides,
