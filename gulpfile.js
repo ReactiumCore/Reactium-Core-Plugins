@@ -2,4 +2,4 @@
 //   THIS FILE IS GENERATED VIA THE ARCLI UPDATE COMMAND
 // *******************************************************
 
-require('./.core/gulpfile');
+require('@atomic-reactor/reactium-core/gulpfile');
