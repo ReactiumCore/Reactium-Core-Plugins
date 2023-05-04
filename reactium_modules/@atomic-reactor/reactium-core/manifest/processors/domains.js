@@ -1,7 +1,8 @@
 const path = require('path');
 const op = require('object-path');
 const { fileToDomain } = require('../manifest-tools');
-const rootPath = path.resolve(__dirname, '../../..');
+const rootPath = path.resolve(__dirname, '../../../../..');
+console.log({ rootPath });
 
 module.exports = data => {
     const domains = {};
