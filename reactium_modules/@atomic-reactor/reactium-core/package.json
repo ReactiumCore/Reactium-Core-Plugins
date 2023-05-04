@@ -6,7 +6,7 @@
     "version": "5.0.0"
   },
   "name": "@atomic-reactor/reactium-core",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "description": "Reactium Core Module",
   "dependencies": {
     "@atomic-reactor/dirname": "^1.0.2",
@@ -107,7 +107,7 @@
     "nodemon": "^2.0.21",
     "open": "^8.4.2",
     "ora": "^5.4.1",
-    "reactium": "^3.0.10",
+    "reactium": "^5.0.0",
     "readdir-recursive": "0.0.4",
     "sass": "^1.59.3",
     "sass-embedded": "^1.62.0",
