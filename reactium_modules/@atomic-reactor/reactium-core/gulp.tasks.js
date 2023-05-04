@@ -20,10 +20,9 @@ const chalk = require('chalk');
 const reactiumConfig = require('./reactium-config');
 const { regenManifest } = require('./manifest/manifest-tools');
 const umdWebpackGenerator = require('./umd.webpack.config');
-const { fork, spawn, execSync } = require('child_process');
+const { fork, spawn } = require('child_process');
 const { File, FileReader } = require('file-api');
 const handlebars = require('handlebars');
-const { resolve } = require('path');
 const axios = require('axios');
 const axiosRetry = require('axios-retry');
 const _ = require('underscore');
@@ -283,7 +282,7 @@ const reactium = (gulp, config, webpackConfig) => {
         if (!isDev) done();
 
         const arcliBin = path.resolve(
-            path.dirname(require.resolve('@atomic-reactor/cli')),
+            path.dirname(require.resolve('reactium')),
             'arcli.js',
         );
         const args = [
