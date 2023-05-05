@@ -390,8 +390,8 @@ module.exports = {
                 {
                     overwrite: false,
                     version: '>=5.0.0',
-                    destination: '/src/server.cert',
-                    source: '/tmp/update/src/server.cert',
+                    destination: '/src/server.crt',
+                    source: '/tmp/update/src/server.crt',
                 },
             ],
             remove: [],
