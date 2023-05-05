@@ -326,7 +326,7 @@ const startServer = async () => {
     });
 
     if (process.env.REACTIUM_TLS_MODE === 'on') {
-        const spdy = await import('spdy');
+        const { default: spdy } = await import('spdy');
         const options = {
             key: fs.readFileSync(
                 op.get(
