@@ -85,10 +85,9 @@ const registeredMiddleware = async () => {
     // serve the static files out of ./public or specified directory
     global.staticAssets =
         process.env.PUBLIC_DIRECTORY || path.resolve(rootPath, 'public');
-    console.log('global.staticAssets', global.staticAssets)
+
     global.staticHTML =
-        process.env.PUBLIC_HTML ||
-        path.resolve(rootPath, 'public/static-html');
+        process.env.PUBLIC_HTML || path.resolve(rootPath, 'public/static-html');
 
     ReactiumBoot.Server.Middleware.register('static', {
         name: 'static',
@@ -192,7 +191,9 @@ const registeredDevMiddleware = async () => {
             './webpack.config.js'
         );
         const webpackConfig = webpackConfigFactory(gulpConfig);
-        const { default: wpMiddleware } = await import('webpack-dev-middleware');
+        const { default: wpMiddleware } = await import(
+            'webpack-dev-middleware'
+        );
         const { default: wpHotMiddleware } = await import(
             'webpack-hot-middleware'
         );
@@ -331,14 +332,14 @@ const startServer = async () => {
                 op.get(
                     process.env,
                     'REACTIUM_TLS_KEY',
-                    path.resolve(__dirname, '../src', 'server.key'),
+                    path.resolve(rootPath, 'src', 'server.key'),
                 ),
             ),
             cert: fs.readFileSync(
                 op.get(
                     process.env,
                     'REACTIUM_TLS_CERT',
-                    path.resolve(__dirname, '../src', 'server.crt'),
+                    path.resolve(rootPath, 'src', 'server.crt'),
                 ),
             ),
         };

@@ -381,6 +381,18 @@ module.exports = {
                     destination: '/babel.config.js',
                     source: '/tmp/update/babel.config.js',
                 },
+                {
+                    overwrite: false,
+                    version: '>=5.0.0',
+                    destination: '/src/server.key',
+                    source: '/tmp/update/src/server.key',
+                },
+                {
+                    overwrite: false,
+                    version: '>=5.0.0',
+                    destination: '/src/server.cert',
+                    source: '/tmp/update/src/server.cert',
+                },
             ],
             remove: [],
         },
