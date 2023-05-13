@@ -54,7 +54,7 @@ const INPUT = async ({ inquirer, params }) => {
             {
                 prefix,
                 suffix,
-                default: false,
+                default: true,
                 type: 'confirm',
                 name: 'style',
                 message: 'Stylesheet?',
@@ -77,7 +77,7 @@ const CONFIRM = async ({ inquirer, params }) => {
         {
             prefix,
             suffix,
-            default: false,
+            default: true,
             type: 'confirm',
             name: 'confirm',
             message: 'Proceed?',

@@ -25,7 +25,7 @@ const componentGen = async props => {
         route: {
             file: 'route.js',
             template: 'route.hbs',
-            create: typeof params.route === 'string',
+            create: params.route !== '[]',
         },
         style: {
             file: params.styleType || '_reactium-style.scss',

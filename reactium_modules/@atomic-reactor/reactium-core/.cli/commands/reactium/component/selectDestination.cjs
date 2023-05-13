@@ -8,6 +8,7 @@ module.exports = () => ({
     name: 'destination',
     itemType: 'directory',
     message: 'Select directory',
+    default: 'src/app/components',
     excludeFilter: nodePath => nodePath == '.' || nodePath.startsWith('.'),
     excludePath: nodePath =>
         nodePath.startsWith('build/') || nodePath.startsWith('node_modules'),

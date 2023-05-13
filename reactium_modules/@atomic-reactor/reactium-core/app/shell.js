@@ -41,3 +41,9 @@ export const Shell = async (
 
     setTimeout(loadCb, delay);
 };
+
+if (module.hot && !window.disableHMRReload) {
+    module.hot.accept(['./index.js'], () => {
+        window.location.reload();
+    });
+}

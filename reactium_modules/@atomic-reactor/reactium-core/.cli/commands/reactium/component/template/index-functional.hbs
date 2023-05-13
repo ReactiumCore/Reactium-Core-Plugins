@@ -1,25 +1,14 @@
-import PropTypes from 'prop-types';
 import { useSyncState } from '@atomic-reactor/reactium-core/sdk';
-import React, { forwardRef, useImperativeHandle } from 'react';
+import React from 'react';
 
 /**
  * -----------------------------------------------------------------------------
- * Functional Component: {{name}}
+ * Component: {{name}}
  * -----------------------------------------------------------------------------
  */
-let {{name}} = ({ className }, ref) => {
-
-    const state = useSyncState({});
-
-    useImperativeHandle(ref, () => state);
-
-    return <div className={className}>{{name}}</div>;
-};
-
-{{name}} = forwardRef({{name}});
-
-{{name}}.propTypes = {
-    className: PropTypes.string,
+export const {{name}} = ({ className }) => {
+    const state = useSyncState({ content: '{{name}}' });
+    return <div className={className}>{state.get('content')}</div>;
 };
 
 {{name}}.defaultProps = {

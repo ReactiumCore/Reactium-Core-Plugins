@@ -1,7 +1,9 @@
-import Component from './index';
+import { {{name}} as component } from './index';
 
-export default {
-    exact: true,
-    component: Component,
-    path: {{{route}}},
-};
+export default [
+    {
+        exact: true,
+        component,
+        path: {{{route}}},
+    },
+]; 

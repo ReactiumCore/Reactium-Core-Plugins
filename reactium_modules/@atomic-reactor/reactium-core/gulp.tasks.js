@@ -868,7 +868,7 @@ $color: map.set($color, "{{key}}", \${{{ key }}});
         // Watch for file changes
         watchers['manifest'] = gulp.watch(
             config.watch.js,
-            gulp.parallel(task('manifest')),
+            gulp.task('manifest'),
         );
 
         watchers['styles:colors'] = gulp.watch(

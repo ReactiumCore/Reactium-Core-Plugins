@@ -3,11 +3,10 @@
  * Reactium Plugin {{name}}
  * -----------------------------------------------------------------------------
  */
-
-import Component from './index';
-import Reactium from '@atomic-reactor/reactium-core/sdk';
-
 (async () => {
-    await Reactium.Plugin.register('{{name}}');
-    Reactium.Component.register('{{name}}', Component);
+    const { Plugin, Component } = await import('@atomic-reactor/reactium-core/sdk');
+    const { {{name}} } = await import('./index');
+    
+    await Plugin.register('{{name}}');
+    Component.register('{{name}}', {{name}});
 })();
