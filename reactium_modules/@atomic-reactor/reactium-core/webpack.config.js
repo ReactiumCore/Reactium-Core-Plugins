@@ -78,13 +78,17 @@ module.exports = config => {
 
     sdk.addRule('babel-loader', {
         test: [/\.jsx|js($|\?)/],
-        exclude: [/node_modules/, /umd.js$/],
+        exclude: [/node_modules/, /umd.js$/, /\.cli/],
         resolve: {
             extensions: ['.js', '.jsx', '.json'],
         },
         use: [
             {
                 loader: 'babel-loader',
+                options: {
+                    cacheCompression: false,
+                    cacheDirectory: true,
+                },
             },
         ],
     });
@@ -116,10 +120,6 @@ module.exports = config => {
     sdk.addIgnore('reactium-webpack', /reactium-webpack$/);
     sdk.addIgnore('parse-node', /parse\/node/);
     sdk.addIgnore('xmlhttprequest', /xmlhttprequest/);
-
-    if (env === 'production') {
-        sdk.addIgnore('redux-devtools', /redux-devtools/);
-    }
 
     return overrides(sdk.config());
 };

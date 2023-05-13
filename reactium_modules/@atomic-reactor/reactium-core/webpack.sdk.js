@@ -15,6 +15,9 @@ class WebpackReactiumWebpack {
     constructor(name, ddd, context) {
         this.name = name;
         this.context = context;
+        this.cache = {
+            type: 'filesystem',
+        };
 
         // setter/getter initial values
         this.entryValue = {
@@ -347,6 +350,10 @@ class WebpackReactiumWebpack {
                 use: [
                     {
                         loader: 'babel-loader',
+                        options: {
+                            cacheCompression: false,
+                            cacheDirectory: true,
+                        },
                     },
                 ],
             });
@@ -354,6 +361,7 @@ class WebpackReactiumWebpack {
 
         const theConfig = {
             mode: this.mode,
+            cache: this.cache,
             target: this.target,
             output: this.output,
             entry: this.entry,
