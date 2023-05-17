@@ -8,13 +8,11 @@ const onLoaded = () => {
     }
 };
 
-const shellRoot = document.querySelector('[data-reactium-shell]');
-
-export const Shell = async (
+export const Shell = async ({
     LoadingComponent,
     loadCb = onLoaded,
     delay = 250,
-) => {
+} = {}) => {
     const { default: React, useRef } = await import('react');
     const { createRoot } = await import('react-dom/client');
 
@@ -25,13 +23,14 @@ export const Shell = async (
         Loading = mod.Loading;
     }
 
-    const Shell = () => {
+    const ShellComponent = () => {
         window.LoadingRef = useRef();
         return <Loading ref={window.LoadingRef} />;
     };
 
+    const shellRoot = document.querySelector('[data-reactium-shell]');
     try {
-        createRoot(shellRoot).render(<Shell />);
+        shellRoot && createRoot(shellRoot).render(<ShellComponent />);
     } catch (error) {
         console.error(error);
     }

@@ -6,11 +6,6 @@
 module.exports = {
     domains: {
         API: { name: 'API', implied: 'api', original: 'src/app/api/domain.js' },
-        HelloWorld: {
-            name: 'HelloWorld',
-            implied: 'HelloWorld',
-            original: 'src/app/components/HelloWorld/domain.js',
-        },
         TestSvg: {
             name: 'TestSvg',
             implied: 'TestSvg',
@@ -30,7 +25,6 @@ module.exports = {
     },
     relative: {
         'src/app/api': 'API',
-        'src/app/components/HelloWorld': 'HelloWorld',
         'src/app/components/TestSvg': 'TestSvg',
         'src/app/components/Welcome': 'Welcome',
         'reactium_modules/@atomic-reactor/reactium-core/components/Loading':
