@@ -8,28 +8,28 @@ const componentGen = async props => {
 
     const templates = {
         hooks: {
-            file: 'reactium-hooks.js',
+            file: `reactium-hooks-${params.className}.js`,
             template: 'reactium-hooks.hbs',
             create: params.hooks,
         },
         component: {
-            file: 'index.js',
+            file: `${params.name}.jsx`,
             template: 'index-functional.hbs',
             create: params.index,
         },
         domain: {
-            file: 'domain.js',
+            file: `reactium-domain-${params.className}.js`,
             template: 'domain.hbs',
             create: params.domain,
         },
         route: {
-            file: 'route.js',
+            file: `reactium-route-${params.className}.js`,
             template: 'route.hbs',
             create: params.route !== '[]',
         },
         style: {
-            file: params.styleType || '_reactium-style.scss',
-            template: params.className ? 'reactium-style.hbs' : undefined,
+            file: `${params.styleType}-${params.name}.scss` || '_reactium-style-${params.name}.scss',
+            template: 'reactium-style.hbs',
             create: params.style,
         },
     };

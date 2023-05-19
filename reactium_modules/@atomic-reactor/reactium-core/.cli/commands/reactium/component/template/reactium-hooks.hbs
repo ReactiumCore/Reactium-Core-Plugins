@@ -4,9 +4,10 @@
  * -----------------------------------------------------------------------------
  */
 (async () => {
-    const { Plugin, Component } = await import('@atomic-reactor/reactium-core/sdk');
-    const { {{name}} } = await import('./index');
-    
-    await Plugin.register('{{name}}');
-    Component.register('{{name}}', {{name}});
+    const { Hook, Enums, Component } = await import('@atomic-reactor/reactium-core/sdk');
+
+    Hook.register('plugin-init', async () => {
+        const { {{name}} } = await import('./{{name}}');        
+        Component.register('{{name}}', {{name}});
+    }, Enums.priority.normal, 'plugin-init-{{name}}');
 })();

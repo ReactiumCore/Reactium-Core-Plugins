@@ -88,22 +88,17 @@ const defaultManifestConfig = {
         {
             name: 'allRoutes',
             type: 'route',
-            pattern: /route.jsx?$/,
+            pattern: /(routes?|reactium-routes?.*?)\.jsx?$/,
         },
         {
             name: 'allServices',
             type: 'services',
-            pattern: /services.jsx?$/,
-        },
-        {
-            name: 'allPlugins',
-            type: 'plugin',
-            pattern: /(plugin|zone).jsx?$/,
+            pattern: /(services?|reactium-services?(?!-worker).*?)\.jsx?$/,
         },
         {
             name: 'allHooks',
             type: 'hooks',
-            pattern: /reactium-hooks.js$/,
+            pattern: /reactium-hooks?.*?\.js$/,
         },
     ],
     sourceMappings: [
@@ -127,7 +122,7 @@ const defaultManifestConfig = {
             {
                 name: 'allUmdEntries',
                 type: 'umd',
-                pattern: /umd.js$/,
+                pattern: /(umd|reactium-umd.*?)\.js$/,
                 ignore: /assets/,
             },
             {
@@ -158,7 +153,7 @@ const defaultManifestConfig = {
             {
                 name: 'allDomains',
                 type: 'domain',
-                pattern: /domain.js$/,
+                pattern: /(domain|reactium-domain.*?)\.js$/,
             },
         ],
         sourceMappings: [
@@ -311,33 +306,9 @@ module.exports = {
                 },
                 {
                     overwrite: false,
-                    version: '>=3.2.1',
-                    destination: '/.flowconfig',
-                    source: '/tmp/update/.flowconfig',
-                },
-                {
-                    overwrite: false,
                     version: '>=3.2.2',
                     destination: '/.huskyrc',
                     source: '/tmp/update/.huskyrc',
-                },
-                {
-                    overwrite: false,
-                    version: '>=3.4.2',
-                    destination: '/src/app/api/reactium-hooks.js',
-                    source: '/tmp/update/src/app/api/reactium-hooks.js',
-                },
-                {
-                    overwrite: false,
-                    version: '>=3.4.2',
-                    destination: '/src/app/api/index.js',
-                    source: '/tmp/update/src/app/api/index.js',
-                },
-                {
-                    overwrite: false,
-                    version: '>=3.4.2',
-                    destination: '/src/app/api/domain.js',
-                    source: '/tmp/update/src/app/api/domain.js',
                 },
                 {
                     overwrite: false,

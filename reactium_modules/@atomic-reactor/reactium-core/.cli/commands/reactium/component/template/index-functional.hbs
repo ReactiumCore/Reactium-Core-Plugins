@@ -8,6 +8,7 @@ import React from 'react';
  */
 export const {{name}} = ({ className }) => {
     const state = useSyncState({ content: '{{name}}' });
+    
     return <div className={className}>{state.get('content')}</div>;
 };
 

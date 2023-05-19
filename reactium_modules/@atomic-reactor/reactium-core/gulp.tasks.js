@@ -564,25 +564,25 @@ $assets: map.set($assets, "{{key}}", "{{{dataURL}}}");
 
     const sassPartialPreRegistrations = SassPartial => {
         SassPartial.register('mixins-dir', {
-            pattern: /mixins\/_reactium-style/,
+            pattern: /mixins?\/_reactium-style/,
             exclude: false,
             priority: ReactiumGulp.Enums.style.MIXINS,
         });
 
         SassPartial.register('mixins-ddd', {
-            pattern: /_reactium-style-mixins/,
+            pattern: /_reactium-style-mixins?/,
             exclude: false,
             priority: ReactiumGulp.Enums.style.MIXINS,
         });
 
         SassPartial.register('variables-dir', {
-            pattern: /variables\/_reactium-style/,
+            pattern: /variables?\/_reactium-style/,
             exclude: false,
             priority: ReactiumGulp.Enums.style.VARIABLES,
         });
 
         SassPartial.register('variables-ddd', {
-            pattern: /_reactium-style-variables/,
+            pattern: /_reactium-style-variables?/,
             exclude: false,
             priority: ReactiumGulp.Enums.style.VARIABLES,
         });
@@ -600,49 +600,49 @@ $assets: map.set($assets, "{{key}}", "{{{dataURL}}}");
         });
 
         SassPartial.register('atoms-dir', {
-            pattern: /atoms\/_reactium-style/,
+            pattern: /atoms?\/_reactium-style/,
             exclude: false,
             priority: ReactiumGulp.Enums.style.ATOMS,
         });
 
         SassPartial.register('atoms-ddd', {
-            pattern: /_reactium-style-atoms/,
+            pattern: /_reactium-style-atoms?/,
             exclude: false,
             priority: ReactiumGulp.Enums.style.ATOMS,
         });
 
         SassPartial.register('molecules-dir', {
-            pattern: /molecules\/_reactium-style/,
+            pattern: /molecules?\/_reactium-style/,
             exclude: false,
             priority: ReactiumGulp.Enums.style.MOLECULES,
         });
 
         SassPartial.register('molecules-ddd', {
-            pattern: /_reactium-style-molecules/,
+            pattern: /_reactium-style-molecules?/,
             exclude: false,
             priority: ReactiumGulp.Enums.style.MOLECULES,
         });
 
         SassPartial.register('organisms-dir', {
-            pattern: /organisms\/_reactium-style/,
+            pattern: /organisms?\/_reactium-style/,
             exclude: false,
             priority: ReactiumGulp.Enums.style.ORGANISMS,
         });
 
         SassPartial.register('organisms-ddd', {
-            pattern: /_reactium-style-organisms/,
+            pattern: /_reactium-style-organisms?/,
             exclude: false,
             priority: ReactiumGulp.Enums.style.ORGANISMS,
         });
 
         SassPartial.register('overrides-dir', {
-            pattern: /overrides\/_reactium-style/,
+            pattern: /overrides?\/_reactium-style/,
             exclude: false,
             priority: ReactiumGulp.Enums.style.OVERRIDES,
         });
 
         SassPartial.register('overrides-ddd', {
-            pattern: /_reactium-style-overrides/,
+            pattern: /_reactium-style-overrides?/,
             exclude: false,
             priority: ReactiumGulp.Enums.style.OVERRIDES,
         });
@@ -695,6 +695,16 @@ $assets: map.set($assets, "{{key}}", "{{{dataURL}}}");
                 const bBase = path.basename(b).toLocaleLowerCase();
                 if (aBase > bBase) return 1;
                 if (aBase < bBase) return -1;
+                return 0;
+            })
+            // sort by numbers found in basename
+            .sort((a, b) => {
+                const aBase = path.basename(a).toLocaleLowerCase();
+                const bBase = path.basename(b).toLocaleLowerCase();
+                const aNumber = aBase.match(/(\d+)/) || 0;
+                const bNumber = bBase.match(/(\d+)/) || 0;
+                if (aNumber > bNumber) return 1;
+                if (aNumber < bNumber) return -1;
                 return 0;
             })
             // sort by priority
