@@ -46,7 +46,7 @@ const loadFramework = async () => {
      * @apiGroup Hooks
      */
     await Hook.run('dependencies-load');
-
+    
     /**
      * @api {Hook} zone-defaults zone-defaults
      * @apiName zone-defaults
@@ -78,7 +78,9 @@ const loadFramework = async () => {
      * @apiParam {Object} context Core attaches generated manifest loaded dependencies to context.deps
      * @apiGroup Hooks
      */
+    await Hook.run('plugin-init');
     await Hook.run('plugin-dependencies');
+
     await Routing.load();
 
     /**

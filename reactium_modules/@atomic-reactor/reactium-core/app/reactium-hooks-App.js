@@ -12,9 +12,6 @@ import deps from 'dependencies';
         isBrowserWindow,
     } = await import('@atomic-reactor/reactium-core/sdk');
 
-    const { RoutedContent } = await import('./RoutedContent');
-    Component.register('RoutedContent', RoutedContent);
-
     Hook.register(
         'routes-init',
         async () => {
@@ -75,36 +72,20 @@ import deps from 'dependencies';
     );
 
     Hook.register(
-        'app-router',
+        'init',
         async () => {
             const { AppParent } = await import('./AppParent');
+            const { NotFound } = await import('./NotFound');
+            const { RoutedContent } = await import('./RoutedContent');
+            const { Router } = await import('./Router');
+            console.log('Initializing Core Components');
             Component.register('AppParent', AppParent);
-            console.log('Defining AppParent.');
-        },
-        Enums.priority.core,
-        'REACTIUM_APP_PARENT',
-    );
-
-    Hook.register(
-        'app-router',
-        async () => {
-            const { Router } = await import('./Router');
+            Component.register('NotFound', NotFound);
+            Component.register('RoutedContent', RoutedContent);
             Component.register('Router', Router);
-            console.log('Defining Router.');
         },
         Enums.priority.core,
-        'REACTIUM_ROUTER',
-    );
-
-    Hook.register(
-        'app-router',
-        async () => {
-            const { Router } = await import('./Router');
-            Component.register('Router', Router);
-            console.log('Defining Router.');
-        },
-        Enums.priority.core,
-        'REACTIUM_ROUTER',
+        'REACTIUM_INIT_CORE_COMPONENTS',
     );
 
     Hook.register(
@@ -139,10 +120,7 @@ import deps from 'dependencies';
     Hook.register(
         'plugin-dependencies',
         context => {
-            // Setup plugin registration
             context.deps = deps();
-
-            console.log('Plugin dependencies.');
             return Promise.resolve();
         },
         Enums.priority.core,
