@@ -316,13 +316,35 @@ const startServer = async () => {
         }
     });
 
+    const deescalatePermissions = () => {
+        if (process.getuid && process.getuid() === 0) {
+            if (!process.env.REACTIUM_RUN_AS || !process.env.REACTIUM_RUN_AS_GROUP) {
+                ERROR(
+                    'You must specify by REACTIUM_RUN_AS and REACTIUM_RUN_AS_GROUP to start Reactium as root user.',
+                );
+                process.exit(1);
+            }
+            try {
+                process.initgroups(
+                    process.env.REACTIUM_RUN_AS,
+                    process.env.REACTIUM_RUN_AS_GROUP,
+                );
+            } catch (error) {
+                ERROR('Error lowering permissions.', error);
+                process.exit(1);
+            }
+        }
+    };
+
     // start server on the specified port and binding host
-    app.listen(PORT, '0.0.0.0', function() {
+    app.listen(PORT, '0.0.0.0', () => {
         BOOT(
             `Reactium Server running ${chalk.red(
                 'PLAIN',
             )} on port '${PORT}'...`,
         );
+
+        if (process.env.REACTIUM_TLS_MODE !== 'on') deescalatePermissions();
     });
 
     if (process.env.REACTIUM_TLS_MODE === 'on') {
@@ -350,6 +372,9 @@ const startServer = async () => {
                 ERROR(error);
                 process.exit(1);
             }
+
+            deescalatePermissions();
+
             BOOT(
                 `Reactium Server running ${chalk.green(
                     'TLS',
