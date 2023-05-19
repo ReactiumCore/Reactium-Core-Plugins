@@ -10,7 +10,7 @@ import 'externals';
 
 const loadFramework = async () => {
     console.log('Loading Core SDK');
-    const { default: Reactium } = await import(
+    const { Reactium, Hook, ZoneRegistry, Routing } = await import(
         '@atomic-reactor/reactium-core/sdk'
     );
 
@@ -25,8 +25,8 @@ const loadFramework = async () => {
      * the Reactium SDK singleton to be extended before the init hook.
      * @apiGroup Hooks
      */
-    await Reactium.Hook.run('sdk-init', Reactium);
-    Reactium.Hook.runSync('sdk-init', Reactium);
+    await Hook.run('sdk-init', Reactium);
+    Hook.runSync('sdk-init', Reactium);
 
     /**
      * @api {Hook} init init
@@ -35,7 +35,7 @@ const loadFramework = async () => {
      front-end
      * @apiGroup Hooks
      */
-    await Reactium.Hook.run('init');
+    await Hook.run('init');
 
     /**
      * @api {Hook} dependencies-load dependencies-load
@@ -45,7 +45,7 @@ const loadFramework = async () => {
      async only - used in front-end
      * @apiGroup Hooks
      */
-    await Reactium.Hook.run('dependencies-load');
+    await Hook.run('dependencies-load');
 
     /**
      * @api {Hook} zone-defaults zone-defaults
@@ -60,7 +60,7 @@ const loadFramework = async () => {
      * @apiGroup Hooks
      */
     // Note: zone-defaults is run from @atomic-reactor/reactium-sdk-core inside Zone.init()
-    await Reactium.Zone.init();
+    await ZoneRegistry.init();
 
     /**
      * @api {Hook} plugin-dependencies plugin-dependencies
@@ -78,8 +78,8 @@ const loadFramework = async () => {
      * @apiParam {Object} context Core attaches generated manifest loaded dependencies to context.deps
      * @apiGroup Hooks
      */
-    await Reactium.Hook.run('plugin-dependencies');
-    await Reactium.Routing.load();
+    await Hook.run('plugin-dependencies');
+    await Routing.load();
 
     /**
      * @api {Hook} plugin-ready plugin-ready
@@ -87,7 +87,7 @@ const loadFramework = async () => {
      * @apiDescription Called after all plugin registration callbacks have completed and routes have loaded.
      * @apiGroup Hooks
      */
-    await Reactium.Hook.run('plugin-ready');
+    await Hook.run('plugin-ready');
 };
 
 /**
@@ -99,10 +99,10 @@ const loadFramework = async () => {
  */
 export const App = async () => {
     const {
-        default: Reactium,
+        Hook,
         hookableComponent,
-        Zone,
         AppContexts,
+        Routing,
     } = await import('@atomic-reactor/reactium-core/sdk');
 
     await loadFramework();
@@ -119,7 +119,7 @@ export const App = async () => {
         (src/app/components or src/app/components/common-ui) e.g. 'DevTools' maps to src/app/components/DevTools
         * @apiGroup Hooks
         */
-    const { bindPoints } = await Reactium.Hook.run('component-bindings');
+    const { bindPoints } = await Hook.run('component-bindings');
 
     /**
      * @api {Hook} app-context-provider app-context-provider
@@ -127,7 +127,7 @@ export const App = async () => {
      * @apiDescription Called after app-bindpoint to define any React context providers, using the [Reactium.AppContext](#api-Reactium-Reactium.AppContext) registry.
      * @apiGroup Hooks
      */
-    await Reactium.Hook.run('app-context-provider');
+    await Hook.run('app-context-provider');
 
     // Render the React Components
     if (bindPoints.length > 0) {
@@ -144,10 +144,11 @@ export const App = async () => {
                 async only - used in front-end application only
                 * @apiGroup Hooks
                 */
-                await Reactium.Hook.run('app-router');
+                await Hook.run('app-router');
 
+                const AppParent = hookableComponent('AppParent');
                 const Router = hookableComponent('Router');
-                const { message = [] } = await Reactium.Hook.run(
+                const { message = [] } = await Hook.run(
                     'app-boot-message',
                 );
 
@@ -155,9 +156,9 @@ export const App = async () => {
 
                 createRoot(Element).render(
                     <AppContexts>
-                        <Zone zone='reactium-provider' />
-                        <Router history={Reactium.Routing.history} />
-                        <Zone zone='reactium-provider-after' />
+                        <AppParent>
+                            <Router history={Routing.history} />
+                        </AppParent>
                     </AppContexts>,
                 );
 
@@ -178,7 +179,7 @@ export const App = async () => {
             }
         }
 
-        _.defer(() => Reactium.Hook.run('app-ready'));
+        _.defer(() => Hook.run('app-ready'));
     }
 };
 

@@ -12,3 +12,5 @@ export const Router = ({ history }) => {
         </Dom>
     );
 };
+
+export default Router;

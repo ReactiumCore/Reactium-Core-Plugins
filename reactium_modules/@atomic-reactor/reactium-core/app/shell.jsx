@@ -42,7 +42,7 @@ export const Shell = async ({
 };
 
 if (module.hot && !window.disableHMRReload) {
-    module.hot.accept(['./index.js'], () => {
+    module.hot.accept(['./index.jsx'], () => {
         window.location.reload();
     });
 }

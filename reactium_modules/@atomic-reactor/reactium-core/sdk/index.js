@@ -10,6 +10,7 @@ import {
     Pulse,
     Prefs,
     Cache,
+    ReactiumSyncState,
 } from '@atomic-reactor/reactium-sdk-core';
 
 import { AppContext } from './named-exports';
@@ -17,8 +18,11 @@ import {
     useDispatcherFactory,
     useStateEffectFactory,
 } from './named-exports/useDispatcher';
+import { Routing } from './routing';
+
 export * from '@atomic-reactor/reactium-sdk-core';
 export * from './named-exports';
+export * from './routing';
 
 const SDK = {
     Hook,
@@ -33,6 +37,8 @@ const SDK = {
     Prefs,
     Cache,
     AppContext,
+    State: new ReactiumSyncState(window.state || {}),
+    Routing,
 };
 
 const apiHandler = {
@@ -60,8 +66,9 @@ const apiHandler = {
     },
 };
 
-const Reactium = new Proxy(SDK, apiHandler);
+export const Reactium = new Proxy(SDK, apiHandler);
 
+// Decorators
 export const useDispatcher = useDispatcherFactory(Reactium);
 export const useStateEffect = useStateEffectFactory(Reactium);
 

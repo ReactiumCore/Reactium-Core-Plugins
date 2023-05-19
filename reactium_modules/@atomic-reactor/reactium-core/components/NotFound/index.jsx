@@ -1,19 +1,19 @@
 import React, { useEffect } from 'react';
-import Reactium, { __, Zone } from '@atomic-reactor/reactium-core/sdk';
+import { __, Zone, ZoneRegistry, Enums } from '@atomic-reactor/reactium-core/sdk';
 
 const DefaultComponent = () => {
-    const comps = Reactium.Zone.getZoneComponents('not-found');
+    const comps = ZoneRegistry.getZoneComponents('not-found');
 
     if (comps.length < 1) {
-        Reactium.Zone.addComponent({
+        ZoneRegistry.addComponent({
             zone: 'not-found',
             id: 'NOT_FOUND_DEFAULT',
             component: () => __('PAGE NOT FOUND'),
-            order: Reactium.Enums.priority.highest,
+            order: Enums.priority.highest,
         });
 
         return () => {
-            Reactium.Zone.removeComponent('NOT_FOUND_DEFAULT');
+            ZoneRegistry.removeComponent('NOT_FOUND_DEFAULT');
         };
     }
 };

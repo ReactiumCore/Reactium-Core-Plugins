@@ -44,7 +44,7 @@ const defaultTransitionStates = [
     },
 ];
 
-class Routing {
+class RoutingFactory {
     loaded = false;
     updated = null;
     routesRegistry = new SDK.Utils.Registry(
@@ -472,6 +472,5 @@ Reactium.Plugin.register('myPlugin').then(() => {
     }
 }
 
-const routing = new Routing();
-
-export default routing;
+export const Routing = new RoutingFactory();
+export default Routing;

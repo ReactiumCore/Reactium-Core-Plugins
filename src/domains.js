@@ -6,11 +6,6 @@
 module.exports = {
     domains: {
         API: { name: 'API', implied: 'api', original: 'src/app/api/domain.js' },
-        Foo: {
-            name: 'Foo',
-            implied: 'Foo',
-            original: 'src/app/components/Foo/reactium-domain-foo.js',
-        },
         TestSvg: {
             name: 'TestSvg',
             implied: 'TestSvg',
@@ -25,12 +20,11 @@ module.exports = {
             name: 'LoadingSpinner',
             implied: 'Loading',
             original:
-                'reactium_modules/@atomic-reactor/reactium-core/components/Loading/domain.js',
+                'reactium_modules/@atomic-reactor/reactium-core/components/Loading/reactium-domain-Loading.js',
         },
     },
     relative: {
         'src/app/api': 'API',
-        'src/app/components/Foo': 'Foo',
         'src/app/components/TestSvg': 'TestSvg',
         'src/app/components/Welcome': 'Welcome',
         'reactium_modules/@atomic-reactor/reactium-core/components/Loading':

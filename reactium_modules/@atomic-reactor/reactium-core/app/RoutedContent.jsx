@@ -20,7 +20,7 @@ const useRoutes = () => {
     return routeState;
 };
 
-const RoutedContent = () => {
+export const RoutedContent = () => {
     // cause rerender if routes are added/removed at runtime
     useRoutes();
     const routing = useRouting();

@@ -64,7 +64,7 @@ export const AppContexts = ({ children }) => {
     }, []);
 
     return AppContext.list.reduce(
-        (content, { name, order, provider: ContextProvider, ...props }) => {
+        (content, { name, provider: ContextProvider, ...props }) => {
             return (
                 <ContextProvider key={`provider-${name}`} {...props}>
                     {content}
