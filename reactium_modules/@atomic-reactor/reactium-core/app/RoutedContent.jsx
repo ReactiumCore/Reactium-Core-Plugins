@@ -4,6 +4,7 @@ import Reactium, {
     useSyncState,
 } from '@atomic-reactor/reactium-core/sdk';
 import { Route } from 'react-router';
+import { Switch } from 'react-router-dom';
 import op from 'object-path';
 
 const useRoutes = () => {
@@ -39,3 +40,11 @@ export const RoutedContent = () => {
 };
 
 export default RoutedContent;
+
+export const AppContent = ({ history }) => {
+    return (
+        <Switch>
+            <RoutedContent />
+        </Switch>
+    );
+};

@@ -104,7 +104,6 @@ export const App = async () => {
         Hook,
         hookableComponent,
         AppContexts,
-        Routing,
     } = await import('@atomic-reactor/reactium-core/sdk');
 
     await loadFramework();
@@ -149,7 +148,7 @@ export const App = async () => {
                 await Hook.run('app-router');
 
                 const AppParent = hookableComponent('AppParent');
-                const Router = hookableComponent('Router');
+                const AppContent = hookableComponent('AppContent');
                 const { message = [] } = await Hook.run(
                     'app-boot-message',
                 );
@@ -159,7 +158,7 @@ export const App = async () => {
                 createRoot(Element).render(
                     <AppContexts>
                         <AppParent>
-                            <Router history={Routing.history} />
+                            <AppContent />
                         </AppParent>
                     </AppContexts>,
                 );

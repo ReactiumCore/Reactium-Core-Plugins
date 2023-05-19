@@ -4,7 +4,9 @@ import deps from 'dependencies';
 
 (async () => {
     const {
-        default: Reactium,
+        Reactium,
+        AppContext,
+        Routing,
         Component,
         Hook,
         Enums,
@@ -76,13 +78,25 @@ import deps from 'dependencies';
         async () => {
             const { AppParent } = await import('./AppParent');
             const { NotFound } = await import('./NotFound');
-            const { RoutedContent } = await import('./RoutedContent');
-            const { Router } = await import('./Router');
+            const { RoutedContent, AppContent } = await import(
+                './RoutedContent'
+            );
+            const { Router, RouterProvider } = await import('./Router');
             console.log('Initializing Core Components');
             Component.register('AppParent', AppParent);
             Component.register('NotFound', NotFound);
             Component.register('RoutedContent', RoutedContent);
+            Component.register('AppContent', AppContent);
             Component.register('Router', Router);
+
+            AppContext.register(
+                'RouterProvider',
+                {
+                    provider: RouterProvider,
+                    history: Routing.history,
+                },
+                Reactium.Enums.priority.core,
+            );
         },
         Enums.priority.core,
         'REACTIUM_INIT_CORE_COMPONENTS',
