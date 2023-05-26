@@ -6,27 +6,6 @@
 module.exports = {
     domains: {
         API: { name: 'API', implied: 'api', original: 'src/app/api/domain.js' },
-        About: {
-            name: 'About',
-            implied: 'About',
-            original: 'src/app/components/About/reactium-domain-about.js',
-        },
-        Home: {
-            name: 'Home',
-            implied: 'Home',
-            original: 'src/app/components/Home/reactium-domain-home.js',
-        },
-        AppParent: {
-            name: 'AppParent',
-            implied: 'AppParent',
-            original:
-                'src/app/components/common-ui/AppParent/reactium-domain-appparent.js',
-        },
-        Nav: {
-            name: 'Nav',
-            implied: 'Nav',
-            original: 'src/app/components/common-ui/Nav/reactium-domain-nav.js',
-        },
         LoadingSpinner: {
             name: 'LoadingSpinner',
             implied: 'Loading',
@@ -36,10 +15,6 @@ module.exports = {
     },
     relative: {
         'src/app/api': 'API',
-        'src/app/components/About': 'About',
-        'src/app/components/Home': 'Home',
-        'src/app/components/common-ui/AppParent': 'AppParent',
-        'src/app/components/common-ui/Nav': 'Nav',
         'reactium_modules/@atomic-reactor/reactium-core/components/Loading':
             'LoadingSpinner',
     },
