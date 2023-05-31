@@ -21,11 +21,12 @@ const reactiumConfig = require('./reactium-config');
 const { regenManifest } = require('./manifest/manifest-tools');
 const umdWebpackGenerator = require('./umd.webpack.config');
 const { fork, spawn } = require('child_process');
-const { File, FileReader } = require('file-api');
 const handlebars = require('handlebars');
 const axios = require('axios');
 const axiosRetry = require('axios-retry');
 const _ = require('underscore');
+const db = require('mime-db');
+const mime = require('mime-type')(db);
 
 // For backward compatibility with gulp override tasks using run-sequence module
 // make compatible with gulp4
@@ -494,18 +495,10 @@ const reactium = (gulp, config, webpackConfig) => {
         done();
     };
 
-    const fileReader = file => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-
-            reader.onerror = () => {
-                reader.abort();
-                reject();
-            };
-
-            reader.onload = () => resolve(reader.result);
-            reader.readAsDataURL(file);
-        });
+    const fileToDataURL = async file => {
+        const type = mime.lookup(file);
+        const buffer = await fs.readFile(file);
+        return `data:${type};base64,${buffer.toString('base64')}`;
     };
 
     const pluginAssetsTemplate = data => {
@@ -539,8 +532,8 @@ $assets: map.set($assets, "{{key}}", "{{{dataURL}}}");
                 const mappings = [];
                 for (const entry of entries) {
                     const [key, fileName] = entry;
-                    const dataURL = await fileReader(
-                        new File(path.resolve(base, fileName)),
+                    const dataURL = await fileToDataURL(
+                        path.resolve(base, fileName),
                     );
                     mappings.push({ key, dataURL });
                 }
