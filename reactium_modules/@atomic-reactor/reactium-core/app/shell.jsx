@@ -8,6 +8,8 @@ const onLoaded = () => {
     }
 };
 
+const roots = window.roots = {};
+
 export const Shell = async ({
     LoadingComponent,
     loadCb = onLoaded,
@@ -36,13 +38,13 @@ export const Shell = async ({
     }
 
     const { App } = await import('./index');
-    await App();
+    await App(roots);
 
     setTimeout(loadCb, delay);
 };
 
 if (module.hot && !window.disableHMRReload) {
-    module.hot.accept(['./index.jsx'], () => {
+    module.hot.accept(['./index.jsx'], async () => {
         window.location.reload();
     });
 }

@@ -90,3 +90,4 @@ src/manifest.js
 *.mo
 webpack-manifest.json
 externals-manifest.js
+cypress/videos
