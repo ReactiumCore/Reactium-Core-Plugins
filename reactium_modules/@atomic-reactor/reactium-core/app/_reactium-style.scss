@@ -1,4 +1,28 @@
+@use "sass:map";
+
+$reactium-blue: #4f82ba !default;
+$reactium-white: #ffffff !default;
+$not-found-color: $reactium-blue !default;
+$not-found-logo-url: map.get($assets, 'reactium-svg') !default;
 .not-found {
     width: 400px;
     margin: 100px auto;
+
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 300px;
+        margin-bottom: 50px;
+    }
+
+    .reactium-logo {
+        width: 60px;
+        height: 60px;
+        background-image: url(#{$not-found-logo-url});
+    }
+
+    p {
+        font-size: 18px;
+    }
 }

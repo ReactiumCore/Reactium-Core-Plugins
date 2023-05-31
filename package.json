@@ -55,5 +55,8 @@
   "workspaces": [
     "reactium_modules/*",
     "reactium_modules/@*/*"
-  ]
+  ],
+  "devDependencies": {
+    "cypress": "^12.13.0"
+  }
 }
