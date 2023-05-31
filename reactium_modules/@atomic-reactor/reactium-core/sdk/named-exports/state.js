@@ -90,24 +90,33 @@ State.extend('registerDataLoader', (config = {}) => {
                 handler: async updates => {
                     const currentPath = op.get(
                         updates,
-                        'current.match.match.path',
+                        'active.location.pathname',
                     );
 
+                    const currentPathPattern = op.get(
+                        updates,
+                        'active.match.route.path',
+                    );
+
+                    const route = op.get(updates, 'active.match.route');
+                    const transitions = op.get(route, 'transitions', false);
+
                     // on any route update that matches
+                    const routeChangeFunctionMatch =
+                        typeof value == 'function' &&
+                        value(currentPath, updates);
+                    const isCorrectRouteLifecycle =
+                        !transitions || updates.transitionState === 'LOADING';
+                    const isMatchingRegExp =
+                        _.isRegExp(value) && value.test(currentPath);
+                    const isMatchingPath =
+                        _.isString(value) &&
+                        (currentPath === value || currentPathPattern === value);
+
                     if (
-                        (typeof value == 'function' &&
-                            value(currentPath, updates)) ||
-                        (Boolean(
-                            [
-                                'changes.pathChanged',
-                                'changes.routeChanged',
-                                'changes.searchChanged',
-                            ].filter(path =>
-                                Boolean(op.get(updates, path, false)),
-                            ).length,
-                        ) &&
-                            ((_.isRegExp(value) && value.test(currentPath)) ||
-                                (_.isString(value) && currentPath === value)))
+                        routeChangeFunctionMatch ||
+                        (isCorrectRouteLifecycle &&
+                            (isMatchingRegExp || isMatchingPath))
                     ) {
                         await dispatchingDataLoad(currentPath, updates);
                     }

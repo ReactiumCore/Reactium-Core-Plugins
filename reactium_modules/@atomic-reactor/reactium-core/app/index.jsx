@@ -46,7 +46,7 @@ const loadFramework = async () => {
      * @apiGroup Hooks
      */
     await Hook.run('dependencies-load');
-    
+
     /**
      * @api {Hook} zone-defaults zone-defaults
      * @apiName zone-defaults
@@ -99,12 +99,10 @@ const loadFramework = async () => {
  * inside of them.
  * -----------------------------------------------------------------------------
  */
-export const App = async () => {
-    const {
-        Hook,
-        hookableComponent,
-        AppContexts,
-    } = await import('@atomic-reactor/reactium-core/sdk');
+export const App = async (roots = {}) => {
+    const { Hook, hookableComponent, AppContexts } = await import(
+        '@atomic-reactor/reactium-core/sdk'
+    );
 
     await loadFramework();
 
@@ -136,6 +134,8 @@ export const App = async () => {
 
         console.log('Binding components.');
         for (const { type, Component, Element } of bindPoints) {
+            if (!roots[type]) roots[type] = createRoot(Element);
+
             if (type === 'App') {
                 /**
                  * @api {Hook} app-router app-router
@@ -149,13 +149,11 @@ export const App = async () => {
 
                 const AppParent = hookableComponent('AppParent');
                 const AppContent = hookableComponent('AppContent');
-                const { message = [] } = await Hook.run(
-                    'app-boot-message',
-                );
+                const { message = [] } = await Hook.run('app-boot-message');
 
                 console.log(...message);
 
-                createRoot(Element).render(
+                roots[type].render(
                     <AppContexts>
                         <AppParent>
                             <AppContent />
@@ -172,7 +170,7 @@ export const App = async () => {
                 */
             } else {
                 // createRoot(Element).render(<Component />);
-                createRoot(Element).render(
+                roots[type].render(
                     <AppContexts>
                         <Component />
                     </AppContexts>,

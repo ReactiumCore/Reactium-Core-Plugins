@@ -214,6 +214,16 @@ const normalizeAssets = assets => _.flatten([assets]);
                     ? '/'
                     : process.env.WEBPACK_RESOURCE_BASE || '/assets/js/',
         });
+
+        if (
+            process.env.NODE_ENV === 'development' &&
+            process.env.DISABLE_HMR === 'on'
+        ) {
+            AppGlobals.register('disableHMRReload', {
+                name: 'disableHMRReload',
+                value: true,
+            });
+        }
     });
 })();
 

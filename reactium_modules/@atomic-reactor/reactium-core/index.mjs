@@ -194,17 +194,20 @@ const registeredDevMiddleware = async () => {
         const { default: wpMiddleware } = await import(
             'webpack-dev-middleware'
         );
-        const { default: wpHotMiddleware } = await import(
-            'webpack-hot-middleware'
-        );
+
         const publicPath = `http://localhost:${PORT}/`;
 
-        // local development overrides for webpack config
-        webpackConfig.entry.main = [
-            'webpack-hot-middleware/client?path=/__webpack_hmr&quiet=true',
-            webpackConfig.entry.main,
-        ];
-        webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
+        // local development overrides for webpack config        
+        if (process.env.DISABLE_HMR !== 'on') {
+            webpackConfig.entry.main = [
+                'webpack-hot-middleware/client?reload=true',
+                webpackConfig.entry.main,
+            ];
+            webpackConfig.plugins.push(
+                new webpack.HotModuleReplacementPlugin(),
+            );
+        }
+
         webpackConfig.output.publicPath = publicPath;
 
         const compiler = webpack(webpackConfig);
@@ -218,13 +221,19 @@ const registeredDevMiddleware = async () => {
             order: Enums.priority.high,
         });
 
-        ReactiumBoot.Server.Middleware.register('hmr', {
-            name: 'hmr',
-            use: wpHotMiddleware(compiler, {
-                reload: true,
-            }),
-            order: Enums.priority.high,
-        });
+        if (process.env.DISABLE_HMR !== 'on') {
+            const { default: wpHotMiddleware } = await import(
+                'webpack-hot-middleware'
+            );
+    
+            ReactiumBoot.Server.Middleware.register('hmr', {
+                name: 'hmr',
+                use: wpHotMiddleware(compiler, {
+                    reload: true,
+                }),
+                order: Enums.priority.high,
+            });
+        }
     }
 };
 
@@ -318,7 +327,10 @@ const startServer = async () => {
 
     const deescalatePermissions = () => {
         if (process.getuid && process.getuid() === 0) {
-            if (!process.env.REACTIUM_RUN_AS || !process.env.REACTIUM_RUN_AS_GROUP) {
+            if (
+                !process.env.REACTIUM_RUN_AS ||
+                !process.env.REACTIUM_RUN_AS_GROUP
+            ) {
                 ERROR(
                     'You must specify by REACTIUM_RUN_AS and REACTIUM_RUN_AS_GROUP to start Reactium as root user.',
                 );
