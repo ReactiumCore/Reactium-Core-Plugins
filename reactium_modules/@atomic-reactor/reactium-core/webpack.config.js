@@ -72,6 +72,10 @@ module.exports = config => {
         use: [
             {
                 loader: '@atomic-reactor/webpack-po-loader',
+                options: {
+                    format: 'jed1.x',
+                    domain: 'messages',
+                },
             },
         ],
     });
