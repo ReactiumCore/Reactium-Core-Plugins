@@ -107,22 +107,25 @@ module.exports = config => {
     sdk.addIgnore('png', /\.png$/);
     sdk.addIgnore('jpg', /\.jpg$/);
     sdk.addIgnore('gif', /\.gif$/);
-    sdk.addIgnore('server-src', /reactium-core\/server/);
-    sdk.addIgnore('manifest-tools', /reactium-core\/manifest/);
-    sdk.addIgnore('core-index', /reactium-core\/index.mjs/);
-    sdk.addIgnore('gulp', /reactium-core\/gulp/);
-    sdk.addIgnore('reactium-config', /reactium-core\/reactium-config.js$/);
-    sdk.addIgnore('webpack-sdk', /reactium-core\/webpack\.sdk/);
-    sdk.addIgnore('core-configs', /reactium-core\/.*?\.config/);
-    sdk.addIgnore('core-cli', /reactium-core\/.cli\//);
+    sdk.addIgnore('server-src', /reactium-core[/\\]{1}server/);
+    sdk.addIgnore('manifest-tools', /reactium-core[/\\]{1}manifest/);
+    sdk.addIgnore('core-index', /reactium-core[/\\]{1}index.mjs/);
+    sdk.addIgnore('gulp', /reactium-core[/\\]{1}gulp/);
+    sdk.addIgnore(
+        'reactium-config',
+        /reactium-core[/\\]{1}reactium-config.js$/,
+    );
+    sdk.addIgnore('webpack-sdk', /reactium-core[/\\]{1}webpack\.sdk/);
+    sdk.addIgnore('core-configs', /reactium-core[/\\]{1}.*?\.config/);
+    sdk.addIgnore('core-cli', /reactium-core[/\\]{1}.cli[/\\]{1}/);
     sdk.addIgnore('project-cli', /\.cli/);
-    sdk.addIgnore('server-app', /src\/app\/server/);
+    sdk.addIgnore('server-app', /src[/\\]{1}app[/\\]{1}server/);
     sdk.addIgnore('arcli-install', /arcli-install.js$/);
     sdk.addIgnore('arcli-publish', /arcli-publish.js$/);
     sdk.addIgnore('reactium-boot', /reactium-boot$/);
     sdk.addIgnore('reactium-gulp', /reactium-gulp$/);
     sdk.addIgnore('reactium-webpack', /reactium-webpack$/);
-    sdk.addIgnore('parse-node', /parse\/node/);
+    sdk.addIgnore('parse-node', /parse[/\\]{1}node/);
     sdk.addIgnore('xmlhttprequest', /xmlhttprequest/);
 
     return overrides(sdk.config());
