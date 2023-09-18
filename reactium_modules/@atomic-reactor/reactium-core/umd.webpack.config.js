@@ -39,21 +39,21 @@ module.exports = umd => {
     sdk.addIgnore('server-src', /server/);
     sdk.addIgnore(
         'manifest-tools-main',
-        /manifest\/(manifest-tools|processors|templates)/,
+        /manifest[/\\]{1}(manifest-tools|processors|templates)/,
     );
-    sdk.addIgnore('core-index', /reactium-core\/index.mjs/);
+    sdk.addIgnore('core-index', /reactium-core[/\\]{1}index.mjs/);
     sdk.addIgnore('gulp', /gulp/);
     sdk.addIgnore('reactium-config', /reactium-config.js$/);
     sdk.addIgnore('webpack-sdk', /webpack/);
     sdk.addIgnore('core-configs', /.*?\.config/);
     sdk.addIgnore('project-cli', /\.cli/);
-    sdk.addIgnore('server-app', /src\/app\/server/);
+    sdk.addIgnore('server-app', /src[/\\]{1}app[/\\]{1}server/);
     sdk.addIgnore('arcli-install', /arcli-install.js$/);
     sdk.addIgnore('arcli-publish', /arcli-publish.js$/);
     sdk.addIgnore('reactium-boot', /reactium-boot$/);
     sdk.addIgnore('reactium-gulp', /reactium-gulp$/);
     sdk.addIgnore('reactium-webpack', /reactium-webpack$/);
-    sdk.addIgnore('parse-node', /parse\/node/);
+    sdk.addIgnore('parse-node', /parse[/\\]{1}node/);
     sdk.addIgnore('xmlhttprequest', /xmlhttprequest/);
 
     const plugins = [];
