@@ -23,20 +23,31 @@ Example:
   $ arcli domain -h
 `);
 
+const normalizeWindows = p =>
+    path
+        .normalize(p)
+        .split(/[\\\/]/g)
+        .join(path.posix.sep)
+        .replace(/^([a-z]{1}):/i, '/$1:');
+
 const ACTION = async ({ opt, props }) => {
     // load hooks
-    for (const file of arcli.globby(
-        [
-            './.core/**/reactium-arcli.js',
-            './src/**/reactium-arcli.js',
-            './reactium_modules/**/reactium-arcli.js',
-            './node_modules/**/reactium-arcli.js',
-        ],
-        {
-            dot: true,
-        },
-    )) {
-        await import(path.resolve(file));
+    for (const file of arcli
+        .globby(
+            [
+                './.core/**/reactium-arcli.js',
+                './src/**/reactium-arcli.js',
+                './reactium_modules/**/reactium-arcli.js',
+                './node_modules/**/reactium-arcli.js',
+            ],
+            {
+                dot: true,
+            },
+        )
+        .filter(Boolean)
+        .map(p => path.resolve(p))
+        .map(normalizeWindows)) {
+        await import(file);
     }
 
     let params = arcli.flagsToParams({ opt, flags: Object.keys(ENUMS.FLAGS) });
