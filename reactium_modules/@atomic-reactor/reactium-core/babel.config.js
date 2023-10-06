@@ -148,31 +148,10 @@ ReactiumBabel.Plugins.register('module-resolver', {
     envs: ['default', 'test', 'library'],
 });
 
-ReactiumBabel.Plugins.register('@babel/plugin-proposal-class-properties', {
-    plugin: ['@babel/plugin-proposal-class-properties', { loose: true }],
-    envs: ['default', 'test', 'library'],
-});
-
 ReactiumBabel.Plugins.register('@babel/plugin-proposal-export-default-from', {
     plugin: ['@babel/plugin-proposal-export-default-from'],
     envs: ['default', 'test', 'library'],
 });
-
-ReactiumBabel.Plugins.register('@babel/plugin-proposal-private-methods', {
-    plugin: ['@babel/plugin-proposal-private-methods', { loose: true }],
-    envs: ['default', 'test', 'library'],
-});
-
-ReactiumBabel.Plugins.register(
-    '@babel/plugin-proposal-private-property-in-object',
-    {
-        plugin: [
-            '@babel/plugin-proposal-private-property-in-object',
-            { loose: true },
-        ],
-        envs: ['default', 'test', 'library'],
-    },
-);
 
 ReactiumBabel.Hook.runSync('plugins', ReactiumBabel.Plugins);
 
