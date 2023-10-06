@@ -10,6 +10,7 @@ module.exports = data => {
     for (const [file, original] of Object.entries(
         op.get(data, 'manifest.allDomains.originals'),
     )) {
+        if (/node_modules/.test(file)) continue;
         const relativeOriginalPath = path.resolve(rootPath, original);
 
         const domainObj = require(relativeOriginalPath);
