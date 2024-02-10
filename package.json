@@ -4,7 +4,8 @@
   "description": "A framework for creating React + Redux apps using the domain driven design (DDD) paradigm.",
   "main": "index.js",
   "dependencies": {
-    "react": "^18.2.0"
+    "react": "^18.2.0",
+    "sass-embedded-win32-x64": "^1.70.0"
   },
   "scripts": {
     "start": "node src/index.mjs",
