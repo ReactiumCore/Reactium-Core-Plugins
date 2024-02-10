@@ -73,6 +73,8 @@ class WebpackReactiumWebpack {
         );
         this.plugins.sdk = this;
 
+        this.extensions = ['.js', '.jsx', '.json'];
+
         this.overridesValue = {};
 
         // avoid costly globbing
@@ -152,8 +154,8 @@ class WebpackReactiumWebpack {
         this.resolveAliases.register(id, { alias });
     }
 
-    addRule(id, rule) {
-        this.rules.register(id, { rule });
+    addRule(id, rule, order = 100) {
+        this.rules.register(id, { rule, order });
     }
 
     addIgnore(id, resourceRegExp, contextRegExp) {
@@ -344,9 +346,6 @@ class WebpackReactiumWebpack {
                     ),
                     /umd.js$/,
                 ],
-                resolve: {
-                    extensions: ['.js', '.jsx', '.json'],
-                },
                 use: [
                     {
                         loader: 'babel-loader',
@@ -381,7 +380,7 @@ class WebpackReactiumWebpack {
             this.resolveAliases.list.forEach(({ id: from, alias: to }) => {
                 alias[from] = to;
             });
-            theConfig.resolve = { alias };
+            theConfig.resolve = { alias, extensions: this.extensions };
         }
 
         ReactiumWebpack.Hook.runSync('after-config', theConfig, this);
