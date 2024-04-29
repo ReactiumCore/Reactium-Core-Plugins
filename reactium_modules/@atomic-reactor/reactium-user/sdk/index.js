@@ -1,22 +1,20 @@
-import SDK from 'reactium-core/sdk';
+import SDK, { Hook, Enums, Cache, registryFactory } from 'reactium-core/sdk';
 import _ from 'underscore';
 import op from 'object-path';
 import uuid from 'uuid/v4';
-
-const { Hook, Enums, Cache, Utils } = SDK;
 const User = { Meta: {}, Pref: {}, Role: {}, selected: null };
 
 Enums.cache.sessionValidate = 5000;
 
-/**
- * @api {Asyncronous} User.auth(username,password) User.auth()
- * @apiDescription Authenticate with the Actinium server.
- * @apiName User.auth
- * @apiParam {String} username
- * @apiParam {String} password
- * @apiGroup Reactium.User
- *
- */
+// /**
+//  * @api {Asyncronous} User.auth(username,password) User.auth()
+//  * @apiDescription Authenticate with the Actinium server.
+//  * @apiName User.auth
+//  * @apiParam {String} username
+//  * @apiParam {String} password
+//  * @apiGroup Reactium.User
+//  *
+//  */
 User.auth = (username, password) =>
     SDK.API.Actinium.User.logIn(username, password)
         .then(u => u.fetch())
@@ -559,21 +557,21 @@ User.Pref.delete = async params => {
 };
 
 // User DirtyEvent, ScrubEvent
-User.DirtyEvent = Utils.registryFactory('UserDirtyEvent');
+User.DirtyEvent = registryFactory('UserDirtyEvent');
 User.DirtyEvent.protect(['change']);
-User.DirtyEvent.protected.forEach(id => User.DirtyEvent.register(id));
+User.DirtyEvent.protected.forEach(id => User.DirtyEvent.register({ id }));
 
-User.ScrubEvent = Utils.registryFactory('UserScrubEvent');
+User.ScrubEvent = registryFactory('UserScrubEvent');
 User.ScrubEvent.protect([
     'loaded',
     'save-success',
     'user-role-add',
     'user-role-remove',
 ]);
-User.ScrubEvent.protected.forEach(id => User.ScrubEvent.register(id));
+User.ScrubEvent.protected.forEach(id => User.ScrubEvent.register({ id }));
 
 // User Content Zone registry. Used to register tabs on the user profile page.
-User.Content = Utils.registryFactory('UserContent');
+User.Content = registryFactory('UserContent');
 User.Content.protect(['admin-user-content', 'admin-user-media'])
     .register('admin-user-content', {
         order: 10,

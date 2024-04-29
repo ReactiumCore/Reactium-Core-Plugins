@@ -1,4 +1,7 @@
-const ReactiumWebpack = require('@atomic-reactor/reactium-sdk-core').default;
+const {
+    ...ReactiumWebpack
+} = require('@atomic-reactor/reactium-sdk-core/core');
+const { registryFactory, Registry } = ReactiumWebpack;
 const op = require('object-path');
 const _ = require('underscore');
 const webpack = require('webpack');
@@ -31,46 +34,34 @@ class WebpackReactiumWebpack {
             minimize: false,
         };
 
-        this.resolveAliases = ReactiumWebpack.Utils.registryFactory(
+        this.resolveAliases = registryFactory(
             'resolveAliases',
             'id',
-            ReactiumWebpack.Utils.Registry.MODES.CLEAN,
+            Registry.MODES.CLEAN,
         );
         this.resolveAliases.sdk = this;
 
-        this.transpiledDependencies = ReactiumWebpack.Utils.registryFactory(
+        this.transpiledDependencies = registryFactory(
             'transpiledDependencies',
             'module',
-            ReactiumWebpack.Utils.Registry.MODES.CLEAN,
+            Registry.MODES.CLEAN,
         );
         this.transpiledDependencies.sdk = this;
 
-        this.ignores = ReactiumWebpack.Utils.registryFactory(
-            'ignores',
-            'id',
-            ReactiumWebpack.Utils.Registry.MODES.CLEAN,
-        );
+        this.ignores = registryFactory('ignores', 'id', Registry.MODES.CLEAN);
         this.ignores.sdk = this;
 
-        this.externals = ReactiumWebpack.Utils.registryFactory(
+        this.externals = registryFactory(
             'externals',
             'id',
-            ReactiumWebpack.Utils.Registry.MODES.CLEAN,
+            Registry.MODES.CLEAN,
         );
         this.externals.sdk = this;
 
-        this.rules = ReactiumWebpack.Utils.registryFactory(
-            'rules',
-            'id',
-            ReactiumWebpack.Utils.Registry.MODES.CLEAN,
-        );
+        this.rules = registryFactory('rules', 'id', Registry.MODES.CLEAN);
         this.rules.sdk = this;
 
-        this.plugins = ReactiumWebpack.Utils.registryFactory(
-            'plugins',
-            'id',
-            ReactiumWebpack.Utils.Registry.MODES.CLEAN,
-        );
+        this.plugins = registryFactory('plugins', 'id', Registry.MODES.CLEAN);
         this.plugins.sdk = this;
 
         this.extensions = ['.js', '.jsx', '.json'];

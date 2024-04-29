@@ -1,11 +1,14 @@
 import React from 'react';
-import SDK, {
+import {
+    Enums,
+    Hook,
     Handle,
     ReactiumSyncState,
     isServerWindow,
     isBrowserWindow,
     isElectronWindow,
     useHookComponent,
+    Registry,
 } from '@atomic-reactor/reactium-sdk-core';
 import uuid from 'uuid/v4';
 import _ from 'underscore';
@@ -14,7 +17,6 @@ import { createBrowserHistory, createMemoryHistory } from 'history';
 import queryString from 'querystring-browser';
 import { matchPath } from 'react-router';
 
-const { Hook } = SDK;
 const NotFound = () => React.createElement(useHookComponent('NotFound'));
 const createHistory = isElectronWindow()
     ? createMemoryHistory
@@ -42,15 +44,11 @@ const defaultTransitionStates = [
 class RoutingFactory {
     loaded = false;
     updated = null;
-    routesRegistry = new SDK.Utils.Registry(
-        'Routing',
-        'id',
-        SDK.Utils.Registry.MODES.CLEAN,
-    );
-    routeListeners = new SDK.Utils.Registry(
+    routesRegistry = new Registry('Routing', 'id', Registry.MODES.CLEAN);
+    routeListeners = new Registry(
         'RoutingListeners',
         'id',
-        SDK.Utils.Registry.MODES.CLEAN,
+        Registry.MODES.CLEAN,
     );
 
     active = 'current';
@@ -328,7 +326,7 @@ class RoutingFactory {
             id: 'NotFound',
             exact: false,
             component: NotFound,
-            order: SDK.Enums.priority.lowest,
+            order: Enums.priority.lowest,
         });
 
         this.loaded = true;

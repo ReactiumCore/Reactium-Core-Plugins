@@ -1,7 +1,5 @@
-import SDK, { isBrowserWindow } from '@atomic-reactor/reactium-sdk-core';
+import { isBrowserWindow, Hook } from '@atomic-reactor/reactium-sdk-core';
 import Jed from 'jed';
-
-const { Hook } = SDK;
 
 class i18n {
     locale = 'en_US';

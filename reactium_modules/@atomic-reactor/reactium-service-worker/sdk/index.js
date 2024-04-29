@@ -1,5 +1,4 @@
-import SDK from '@atomic-reactor/reactium-sdk-core';
-const { Hook } = SDK;
+import { Hook } from '@atomic-reactor/reactium-sdk-core';
 
 class ServiceWorker {
     constructor() {

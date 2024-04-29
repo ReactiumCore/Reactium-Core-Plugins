@@ -33,6 +33,7 @@ const mime = require('mime-type')(db);
 require('module-alias').addAlias('run-sequence', 'gulp4-run-sequence');
 
 const reactium = (gulp, config, webpackConfig) => {
+    const { Registry, registryFactory, Enums, Hook } = ReactiumGulp;
     axiosRetry(axios, {
         retries: config.serverRetries,
         retryDelay: retryCount => {
@@ -274,7 +275,7 @@ const reactium = (gulp, config, webpackConfig) => {
             'postBuild',
         ];
 
-        ReactiumGulp.Hook.runSync('build-series', series);
+        Hook.runSync('build-series', series);
 
         return generateSeries(series);
     };
@@ -421,7 +422,7 @@ const reactium = (gulp, config, webpackConfig) => {
                     info.namedChunkGroups.main.assets,
                     'name',
                 );
-                ReactiumGulp.Hook.runSync(
+                Hook.runSync(
                     'main-webpack-assets',
                     mainEntryAssets,
                     info,
@@ -559,85 +560,85 @@ $assets: map.set($assets, "{{key}}", "{{{dataURL}}}");
         SassPartial.register('mixins-dir', {
             pattern: /mixins?\/_reactium-style/,
             exclude: false,
-            priority: ReactiumGulp.Enums.style.MIXINS,
+            priority: Enums.style.MIXINS,
         });
 
         SassPartial.register('mixins-ddd', {
             pattern: /_reactium-style-mixins?/,
             exclude: false,
-            priority: ReactiumGulp.Enums.style.MIXINS,
+            priority: Enums.style.MIXINS,
         });
 
         SassPartial.register('variables-dir', {
             pattern: /variables?\/_reactium-style/,
             exclude: false,
-            priority: ReactiumGulp.Enums.style.VARIABLES,
+            priority: Enums.style.VARIABLES,
         });
 
         SassPartial.register('variables-ddd', {
             pattern: /_reactium-style-variables?/,
             exclude: false,
-            priority: ReactiumGulp.Enums.style.VARIABLES,
+            priority: Enums.style.VARIABLES,
         });
 
         SassPartial.register('base-dir', {
             pattern: /base\/_reactium-style/,
             exclude: false,
-            priority: ReactiumGulp.Enums.style.BASE,
+            priority: Enums.style.BASE,
         });
 
         SassPartial.register('base-ddd', {
             pattern: /_reactium-style-base/,
             exclude: false,
-            priority: ReactiumGulp.Enums.style.BASE,
+            priority: Enums.style.BASE,
         });
 
         SassPartial.register('atoms-dir', {
             pattern: /atoms?\/_reactium-style/,
             exclude: false,
-            priority: ReactiumGulp.Enums.style.ATOMS,
+            priority: Enums.style.ATOMS,
         });
 
         SassPartial.register('atoms-ddd', {
             pattern: /_reactium-style-atoms?/,
             exclude: false,
-            priority: ReactiumGulp.Enums.style.ATOMS,
+            priority: Enums.style.ATOMS,
         });
 
         SassPartial.register('molecules-dir', {
             pattern: /molecules?\/_reactium-style/,
             exclude: false,
-            priority: ReactiumGulp.Enums.style.MOLECULES,
+            priority: Enums.style.MOLECULES,
         });
 
         SassPartial.register('molecules-ddd', {
             pattern: /_reactium-style-molecules?/,
             exclude: false,
-            priority: ReactiumGulp.Enums.style.MOLECULES,
+            priority: Enums.style.MOLECULES,
         });
 
         SassPartial.register('organisms-dir', {
             pattern: /organisms?\/_reactium-style/,
             exclude: false,
-            priority: ReactiumGulp.Enums.style.ORGANISMS,
+            priority: Enums.style.ORGANISMS,
         });
 
         SassPartial.register('organisms-ddd', {
             pattern: /_reactium-style-organisms?/,
             exclude: false,
-            priority: ReactiumGulp.Enums.style.ORGANISMS,
+            priority: Enums.style.ORGANISMS,
         });
 
         SassPartial.register('overrides-dir', {
             pattern: /overrides?\/_reactium-style/,
             exclude: false,
-            priority: ReactiumGulp.Enums.style.OVERRIDES,
+            priority: Enums.style.OVERRIDES,
         });
 
         SassPartial.register('overrides-ddd', {
             pattern: /_reactium-style-overrides?/,
             exclude: false,
-            priority: ReactiumGulp.Enums.style.OVERRIDES,
+            priority: Enums.style.OVERRIDES,
         });
     };
 
@@ -645,14 +646,14 @@ $assets: map.set($assets, "{{key}}", "{{{dataURL}}}");
         const currentPartial =
             fs.existsSync(config.dest.modulesPartial) &&
             fs.readFileSync(config.dest.modulesPartial, 'utf8');
-        const SassPartialRegistry = ReactiumGulp.Utils.registryFactory(
+        const SassPartialRegistry = registryFactory(
             'SassPartialRegistry',
             'id',
-            ReactiumGulp.Utils.Registry.MODES.CLEAN,
+            Registry.MODES.CLEAN,
         );
 
         sassPartialPreRegistrations(SassPartialRegistry);
-        ReactiumGulp.Hook.runSync('ddd-styles-partial', SassPartialRegistry);
+        Hook.runSync('ddd-styles-partial', SassPartialRegistry);
 
         const stylePartials = globby
             .sync(config.src.styleDDD)
@@ -714,12 +715,12 @@ $assets: map.set($assets, "{{key}}", "{{{dataURL}}}");
                 const aPriority = op.get(
                     aMatch,
                     'priority',
-                    ReactiumGulp.Enums.style.ORGANISMS,
+                    Enums.style.ORGANISMS,
                 );
                 const bPriority = op.get(
                     bMatch,
                     'priority',
-                    ReactiumGulp.Enums.style.ORGANISMS,
+                    Enums.style.ORGANISMS,
                 );
 
                 if (aPriority > bPriority) return 1;
@@ -796,7 +797,7 @@ $color: map.set($color, "{{key}}", \${{{ key }}});
                     'organisms',
                     'overrides',
                 ];
-                ReactiumGulp.Hook.runSync('color-profile-prefixes', prefixes);
+                Hook.runSync('color-profile-prefixes', prefixes);
 
                 if (!prefixes.includes(prefix)) {
                     suffixParts = [prefix].concat(suffixParts);
@@ -850,7 +851,7 @@ $color: map.set($color, "{{key}}", \${{{ key }}});
             'styles:compile',
         ];
 
-        ReactiumGulp.Hook.runSync('style-series', series);
+        Hook.runSync('style-series', series);
 
         return series;
     };

@@ -1,8 +1,6 @@
-import SDK from 'reactium-core/sdk';
+import SDK, { Hook, Cache, registryFactory, Registry } from 'reactium-core/sdk';
 import _ from 'underscore';
 import op from 'object-path';
-
-const { Hook, Cache, Utils } = SDK;
 
 const anonymousCaps = async () => {
     const caps = await Capability.get();
@@ -35,10 +33,10 @@ const update = async (capability, role, action) => {
     return result;
 };
 
-const Registry = Utils.registryFactory(
+const CapRegistry = registryFactory(
     'capability',
     'group',
-    Utils.Registry.MODES.CLEAN,
+    Registry.MODES.CLEAN,
 );
 
 const Capability = {
@@ -77,7 +75,7 @@ Capability.cache = 60000;
 Capability.register('my-ui.view')
  */
 Capability.register = id => {
-    Registry.register(id, {});
+    CapRegistry.register(id, {});
     if (Capability.autosync !== false) {
         Cache.set(
             'cap_register',
@@ -111,10 +109,10 @@ Capability.propagate = async (force = false) => {
     }
 
     // Res down what you're allowed to register from the front-end to just the group name.
-    const capabilities = _.pluck(Registry.list, 'group');
+    const capabilities = _.pluck(CapRegistry.list, 'group');
 
     // Flush the registry.
-    Registry.flush();
+    CapRegistry.flush();
 
     req =
         capabilities.length > 0

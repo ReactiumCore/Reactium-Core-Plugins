@@ -1,4 +1,4 @@
-const ReactiumBabel = require('@atomic-reactor/reactium-sdk-core').default;
+const { ...ReactiumBabel } = require('@atomic-reactor/reactium-sdk-core/core');
 const path = require('path');
 const globby = require('./globby-patch').sync;
 const rootPath = path.resolve(__dirname, '../../..');
@@ -52,10 +52,10 @@ globby([
 /**
  * Babel Module Aliases - for babel-plugin-module-resolver
  */
-ReactiumBabel.ModuleAliases = ReactiumBabel.Utils.registryFactory(
+ReactiumBabel.ModuleAliases = ReactiumBabel.registryFactory(
     'BabelAliases',
     'alias',
-    ReactiumBabel.Utils.Registry.MODES.CLEAN,
+    ReactiumBabel.Registry.MODES.CLEAN,
 );
 ReactiumBabel.ModuleAliases.register('externals', {
     path: './src/externals-manifest',
@@ -90,7 +90,7 @@ ReactiumBabel.env = {
     useBuiltIns: 'usage',
     debug: false,
     targets: {
-        browsers: ['> 1%', 'IE 11'],
+        browsers: ['> 1%'],
     },
 };
 
@@ -101,10 +101,10 @@ ReactiumBabel.Hook.runSync('env', ReactiumBabel.env);
 /**
  * Babel Presets
  */
-ReactiumBabel.Presets = ReactiumBabel.Utils.registryFactory(
+ReactiumBabel.Presets = ReactiumBabel.registryFactory(
     'BabelPreset',
     'name',
-    ReactiumBabel.Utils.Registry.MODES.CLEAN,
+    ReactiumBabel.Registry.MODES.CLEAN,
 );
 ReactiumBabel.Presets.register('@babel/react', {
     preset: '@babel/react',
@@ -120,10 +120,10 @@ ReactiumBabel.Hook.runSync('presets', ReactiumBabel.Presets);
 /**
  * Babel Plugins
  */
-ReactiumBabel.Plugins = ReactiumBabel.Utils.registryFactory(
+ReactiumBabel.Plugins = ReactiumBabel.registryFactory(
     'BabelPlugins',
     'name',
-    ReactiumBabel.Utils.Registry.MODES.CLEAN,
+    ReactiumBabel.Registry.MODES.CLEAN,
 );
 
 ReactiumBabel.Plugins.register('@babel/plugin-syntax-dynamic-import', {

@@ -251,35 +251,35 @@ export const renderAppBindings = req => {
 
 const requestRegistries = () => {
     const Server = {};
-    Server.AppHeaders = ReactiumBoot.Utils.registryFactory(
+    Server.AppHeaders = ReactiumBoot.registryFactory(
         'AppHeaders',
         'name',
-        ReactiumBoot.Utils.Registry.MODES.CLEAN,
+        ReactiumBoot.Registry.MODES.CLEAN,
     );
-    Server.AppScripts = ReactiumBoot.Utils.registryFactory(
+    Server.AppScripts = ReactiumBoot.registryFactory(
         'AppScripts',
         'name',
-        ReactiumBoot.Utils.Registry.MODES.CLEAN,
+        ReactiumBoot.Registry.MODES.CLEAN,
     );
-    Server.AppSnippets = ReactiumBoot.Utils.registryFactory(
+    Server.AppSnippets = ReactiumBoot.registryFactory(
         'AppSnippets',
         'name',
-        ReactiumBoot.Utils.Registry.MODES.CLEAN,
+        ReactiumBoot.Registry.MODES.CLEAN,
     );
-    Server.AppStyleSheets = ReactiumBoot.Utils.registryFactory(
+    Server.AppStyleSheets = ReactiumBoot.registryFactory(
         'AppStyleSheets',
         'name',
-        ReactiumBoot.Utils.Registry.MODES.CLEAN,
+        ReactiumBoot.Registry.MODES.CLEAN,
     );
-    Server.AppBindings = ReactiumBoot.Utils.registryFactory(
+    Server.AppBindings = ReactiumBoot.registryFactory(
         'AppBindings',
         'name',
-        ReactiumBoot.Utils.Registry.MODES.CLEAN,
+        ReactiumBoot.Registry.MODES.CLEAN,
     );
-    Server.AppGlobals = ReactiumBoot.Utils.registryFactory(
+    Server.AppGlobals = ReactiumBoot.registryFactory(
         'AppGlobals',
         'name',
-        ReactiumBoot.Utils.Registry.MODES.CLEAN,
+        ReactiumBoot.Registry.MODES.CLEAN,
     );
 
     return Server;
