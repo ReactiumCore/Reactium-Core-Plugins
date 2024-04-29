@@ -1,4 +1,5 @@
-const ReactiumGulp = require('@atomic-reactor/reactium-sdk-core').default;
+const { ...ReactiumGulp } = require('@atomic-reactor/reactium-sdk-core/core');
+const { registryFactory, Registry } = ReactiumGulp;
 const fs = require('fs');
 const path = require('path');
 const gulp = require('gulp');
@@ -42,11 +43,7 @@ ReactiumGulp.Hook.runSync('config', config, webpackConfig);
 const tasks = require('./gulp.tasks')(gulp, config, webpackConfig);
 const taskPlaceholder = require('./get-task')(gulp);
 
-const GulpRegistry = ReactiumGulp.Utils.registryFactory(
-    'GulpTasks',
-    'name',
-    ReactiumGulp.Utils.Registry.MODES.CLEAN,
-);
+const GulpRegistry = registryFactory('GulpTasks', 'name', Registry.MODES.CLEAN);
 
 GulpRegistry.unregister = name => {
     GulpRegistry.register(name, {

@@ -3,9 +3,11 @@ import _ from 'underscore';
 import reactiumBootHooks from './boot-hooks.mjs';
 import path from 'node:path';
 import { dirname } from '@atomic-reactor/dirname';
-import ReactiumBoot from '@atomic-reactor/reactium-sdk-core';
+import ReactiumBoot from '@atomic-reactor/reactium-sdk-core/core';
+import { Server } from '@atomic-reactor/reactium-sdk-core/server';
 
-global.ReactiumBoot = ReactiumBoot;
+const sdk = { ...ReactiumBoot, Server };
+global.ReactiumBoot = sdk;
 
 const __dirname = dirname(import.meta.url);
 

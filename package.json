@@ -3,10 +3,7 @@
   "version": "5.0.0",
   "description": "A framework for creating React + Redux apps using the domain driven design (DDD) paradigm.",
   "main": "index.js",
-  "dependencies": {
-    "react": "^18.2.0",
-    "sass-embedded-win32-x64": "^1.70.0"
-  },
+  "dependencies": {},
   "scripts": {
     "start": "node src/index.mjs",
     "build": "cross-env NODE_ENV=production gulp",

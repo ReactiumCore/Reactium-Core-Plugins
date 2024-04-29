@@ -1,4 +1,11 @@
-ReactiumWebpack.Hook.registerSync('before-config', sdk => {
+const path = require('path');
+const { Hook } = require('@atomic-reactor/reactium-sdk-core/core');
+
+const tsLoaderOptionsOverrides = {};
+
+Hook.registerSync('before-config', sdk => {
+    Hook.runSync('ts-loader-options', tsLoaderOptionsOverrides);
+
     sdk.addRule(
         'ts-loader',
         {
@@ -6,6 +13,10 @@ ReactiumWebpack.Hook.registerSync('before-config', sdk => {
             use: [
                 {
                     loader: 'ts-loader',
+                    options: {
+                        configFile: path.resolve(__dirname, 'tsconfig.json'),
+                        ...tsLoaderOptionsOverrides,
+                    },
                 },
             ],
             exclude: /node_modules/,
@@ -13,5 +24,5 @@ ReactiumWebpack.Hook.registerSync('before-config', sdk => {
         10,
     );
 
-    sdk.extensions = ['.ts', '.tsx', '.js', '.jsx', '.json'];
+    sdk.extensions = ['.ts', '.tsx'];
 });

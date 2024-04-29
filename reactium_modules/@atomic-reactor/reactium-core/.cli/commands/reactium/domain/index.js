@@ -1,4 +1,4 @@
-import Reactium from '@atomic-reactor/reactium-sdk-core';
+import * as Reactium from '@atomic-reactor/reactium-sdk-core/core';
 const { ActionSequence, ora, path } = arcli;
 
 const ENUMS = {
