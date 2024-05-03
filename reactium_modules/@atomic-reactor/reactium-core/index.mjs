@@ -4,7 +4,6 @@
 
 import cors from 'cors';
 import express from 'express';
-import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cookieSession from 'cookie-session';
 import morgan from 'morgan';
@@ -47,13 +46,13 @@ const registeredMiddleware = async () => {
     // parsers
     ReactiumBoot.Server.Middleware.register('jsonParser', {
         name: 'jsonParser',
-        use: bodyParser.json(),
+        use: express.json(),
         order: Enums.priority.high,
     });
 
     ReactiumBoot.Server.Middleware.register('urlEncoded', {
         name: 'urlEncoded',
-        use: bodyParser.urlencoded({ extended: true }),
+        use: express.urlencoded({ extended: true }),
         order: Enums.priority.high,
     });
 
