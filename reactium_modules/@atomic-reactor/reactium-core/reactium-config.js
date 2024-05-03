@@ -269,12 +269,6 @@ module.exports = {
                     source: '/tmp/update/Dockerfile',
                 },
                 {
-                    overwrite: true,
-                    version: '>=2.3.16',
-                    destination: '/src/app/plugable/index.js',
-                    source: '/tmp/update/src/app/plugable/index.js',
-                },
-                {
                     overwrite: false,
                     version: '>=2.3.16',
                     destination: '.stylelintrc',
