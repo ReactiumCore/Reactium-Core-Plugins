@@ -9,7 +9,6 @@ class ReactiumDependencies {
         this.loadedModules = {};
         this.services = {};
         this.plugins = {};
-        this.plugableConfig = {};
 
         // Just used to determine if is a custom type
         this.coreTypes = ['allServices', 'allPlugins', 'allHooks'];
@@ -114,14 +113,6 @@ class ReactiumDependencies {
                     }
                 }
             }
-
-            try {
-                let plugableConfig = await import('appdir/plugable');
-                if ('default' in plugableConfig) {
-                    plugableConfig = plugableConfig.default;
-                }
-                this.plugableConfig = plugableConfig;
-            } catch (error) {}
 
             this.loaded = true;
         }
