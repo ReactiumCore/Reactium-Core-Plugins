@@ -5,7 +5,6 @@
 
 module.exports = {
     domains: {
-        API: { name: 'API', implied: 'api', original: 'src/app/api/domain.js' },
         StateLoader: {
             name: 'StateLoader',
             implied: 'StateLoader',
@@ -25,7 +24,6 @@ module.exports = {
         },
     },
     relative: {
-        'src/app/api': 'API',
         'src/app/components/Test/StateLoader': 'StateLoader',
         'src/app/components/TsTest': 'TsTest',
         'reactium_modules/@atomic-reactor/reactium-core/components/Loading':
