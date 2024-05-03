@@ -1,10 +1,10 @@
 import { useSyncState } from '@atomic-reactor/reactium-core/sdk';
-import React from 'react';
+import React, { FC } from 'react';
 
-export const TsTest = () => {
-    const state = useSyncState<{ count: number }>({
-        count: 0,
-    });
+export type Counter = { count: number };
+
+export const TsTest: FC<Counter> = (props = { count: 0 }) => {
+    const state = useSyncState<Counter>(props);
 
     return (
         <div>
