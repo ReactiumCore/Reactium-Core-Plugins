@@ -1,4 +1,4 @@
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 import { useEffect } from 'react';
 import Routing from '../routing';
 import { useSyncState } from '@atomic-reactor/reactium-sdk-core';

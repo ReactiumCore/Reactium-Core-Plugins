@@ -1,7 +1,7 @@
 import SDK, { Hook, Enums, Cache, registryFactory } from 'reactium-core/sdk';
 import _ from 'underscore';
 import op from 'object-path';
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 const User = { Meta: {}, Pref: {}, Role: {}, selected: null };
 
 Enums.cache.sessionValidate = 5000;
