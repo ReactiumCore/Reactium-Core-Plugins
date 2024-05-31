@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useAsyncEffect } from '@atomic-reactor/reactium-sdk-core';
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 
 /**
  * @api {ReactHook} useRoles(search) useRoles()

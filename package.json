@@ -57,6 +57,6 @@
     "reactium_modules/@*/*"
   ],
   "devDependencies": {
-    "cypress": "^12.13.0"
+    "cypress": "^13.10.0"
   }
 }

@@ -10,7 +10,7 @@ import {
     useHookComponent,
     Registry,
 } from '@atomic-reactor/reactium-sdk-core';
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 import _ from 'underscore';
 import op from 'object-path';
 import { createBrowserHistory, createMemoryHistory } from 'history';
