@@ -86,7 +86,7 @@
     "file-api": "^0.10.4",
     "fs-readdir-recursive": "^1.1.0",
     "gettext-extract": "^2.0.1",
-    "gulp": "^4.0.2",
+    "gulp": "^5.0.0",
     "gulp-autoprefixer": "^8.0.0",
     "gulp-clean-css": "^4.3.0",
     "gulp-concat": "^2.6.1",
