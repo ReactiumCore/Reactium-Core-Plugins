@@ -6,7 +6,7 @@
     "version": "4.0.2"
   },
   "name": "@atomic-reactor/reactium-user",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "description": "Actinium User API extension for Reactium framework",
   "author": "Reactium LLC",
   "license": "MIT",
