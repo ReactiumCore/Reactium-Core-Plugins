@@ -86,7 +86,6 @@ const defaultConfig = {
         ],
         compress: [
             'public/assets/**/*',
-            'public/assets/js/sw/**/*',
             '!public/assets/js/*.js',
             '!public/assets/**/*.gz',
         ],
