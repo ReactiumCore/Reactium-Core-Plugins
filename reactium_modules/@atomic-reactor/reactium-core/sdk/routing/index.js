@@ -4,7 +4,6 @@ import {
     Hook,
     Handle,
     ReactiumSyncState,
-    isServerWindow,
     isBrowserWindow,
     isElectronWindow,
     useHookComponent,
@@ -79,14 +78,15 @@ class RoutingFactory {
         );
     }
 
-    handleFrontEndDataLoading = async updates => {
+    handleFrontEndDataLoading = async (updates) => {
         if (
             Boolean(
                 [
                     'changes.pathChanged',
                     'changes.routeChanged',
                     'changes.searchChanged',
-                ].filter(path => Boolean(op.get(updates, path, false))).length,
+                ].filter((path) => Boolean(op.get(updates, path, false)))
+                    .length,
             )
         ) {
             // remove any handles from previous routes
@@ -160,14 +160,14 @@ class RoutingFactory {
         }
     };
 
-    setCurrentRoute = async location => {
+    setCurrentRoute = async (location) => {
         const previous = this.currentRoute;
         const current = {
             location,
         };
 
         const matches = this.routes
-            .map(route => ({
+            .map((route) => ({
                 route,
                 match: matchPath(location.pathname, route),
             }))
@@ -232,8 +232,8 @@ class RoutingFactory {
         this.updateListeners(updates);
     };
 
-    updateListeners = updates => {
-        this.routeListeners.list.forEach(sub => {
+    updateListeners = (updates) => {
+        this.routeListeners.list.forEach((sub) => {
             const cb = op.get(sub, 'handler', () => {});
             cb(updates);
         });
@@ -242,10 +242,10 @@ class RoutingFactory {
     setupTransitions = () => {
         const previousTransitions =
             op.get(this.previousRoute, 'match.route.transitions', false) ===
-                true && !isServerWindow();
+            true;
         const currentTransitions =
             op.get(this.currentRoute, 'match.route.transitions', false) ===
-                true && !isServerWindow();
+            true;
         const currentTransitionStates =
             op.get(
                 this.currentRoute,
@@ -254,9 +254,8 @@ class RoutingFactory {
             ) || [];
 
         // set transitionStates on allowed components
-        this.transitionStates = (!currentTransitions
-            ? []
-            : currentTransitionStates
+        this.transitionStates = (
+            !currentTransitions ? [] : currentTransitionStates
         ).filter(({ active = 'current' }) => {
             return (
                 active === 'current' ||
@@ -451,7 +450,7 @@ Reactium.Plugin.register('myPlugin').then(() => {
 
     _update() {
         this.updated = new Date();
-        Object.values(this.subscriptions).forEach(cb => cb());
+        Object.values(this.subscriptions).forEach((cb) => cb());
     }
 
     /**
