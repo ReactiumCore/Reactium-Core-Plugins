@@ -232,7 +232,7 @@ const reactium = (gulp, config, webpackConfig) => {
 
     const assets = () =>
         gulp
-            .src(config.src.assets)
+            .src(config.src.assets, { encoding: false })
             .pipe(rename(assetPath))
             .pipe(gulp.dest(config.dest.assets));
 
