@@ -14,12 +14,10 @@ import chalk from 'chalk';
 import globals from './server-globals.mjs';
 import path from 'node:path';
 import fs from 'fs-extra';
-import globbyPatched from './globby-patch.js';
 import router from './server/router.mjs';
 import { dirname } from '@atomic-reactor/dirname';
 
 const __dirname = dirname(import.meta.url);
-const globby = globbyPatched.sync;
 
 global.rootPath = path.resolve(__dirname, '../../..');
 
@@ -89,14 +87,26 @@ const registeredMiddleware = async () => {
         process.env.PUBLIC_HTML || path.resolve(rootPath, 'public/static-html');
 
     ReactiumBoot.Server.Middleware.register('static', {
-        name: 'static',
+        name: 'staticgz',
         use: staticGzip(staticAssets),
+        order: Enums.priority.neutral,
+    });
+
+    ReactiumBoot.Server.Middleware.register('static', {
+        name: 'static',
+        use: express.static(staticAssets),
+        order: Enums.priority.neutral,
+    });
+
+    ReactiumBoot.Server.Middleware.register('static-html', {
+        name: 'static-html-gz',
+        use: staticGzip(staticHTML),
         order: Enums.priority.neutral,
     });
 
     ReactiumBoot.Server.Middleware.register('static-html', {
         name: 'static-html',
-        use: staticGzip(staticHTML),
+        use: express.static(staticHTML),
         order: Enums.priority.neutral,
     });
 
@@ -196,7 +206,7 @@ const registeredDevMiddleware = async () => {
 
         const publicPath = `http://localhost:${PORT}/`;
 
-        // local development overrides for webpack config        
+        // local development overrides for webpack config
         if (process.env.DISABLE_HMR !== 'on') {
             webpackConfig.entry.main = [
                 'webpack-hot-middleware/client?reload=true',
@@ -224,7 +234,7 @@ const registeredDevMiddleware = async () => {
             const { default: wpHotMiddleware } = await import(
                 'webpack-hot-middleware'
             );
-    
+
             ReactiumBoot.Server.Middleware.register('hmr', {
                 name: 'hmr',
                 use: wpHotMiddleware(compiler, {
@@ -396,7 +406,6 @@ const startServer = async () => {
 };
 
 export const start = async () => {
-    const logger = console;
     try {
         await globals();
         await startServer();
