@@ -197,7 +197,7 @@ on your css assets packaged with your module, for example if the css file is pub
 
 Some framework dependencies are available for import into your plugin module by default, and will be made available to your module from the framework automatically.
 
-A complete and current manifest of these import externals are available in `.core/reactium-config.js` in the `defaultLibraryExternals` constant. To add external dependency configuration in your application to core, implement a `manifest.config.override.js` file in root of your project and modify the `pluginExternals` property:
+A complete and current manifest of these import externals are available in `reactium_modules/@atomic-reactor/reactium-core/reactium-config.js` in the `defaultLibraryExternals` constant. To add external dependency configuration in your application to core, implement a `manifest.config.override.js` file in root of your project and modify the `pluginExternals` property:
 
 > manifest.config.override.js
 
