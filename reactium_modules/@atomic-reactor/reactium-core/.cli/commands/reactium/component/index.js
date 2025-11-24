@@ -22,8 +22,7 @@ const ENUMS = {
         },
         hooks: {
             flag: '-H, --hooks [hooks]',
-            desc:
-                'Create Reactium hooks file and register component for useHookComponent() usage',
+            desc: 'Create Reactium hooks file and register component for useHookComponent() usage',
         },
         style: {
             flag: '-s, --style [style]',
@@ -55,7 +54,7 @@ Example:
   $ arcli component -r "/route-1, /route-1/:param"
 `);
 
-const normalizeWindows = p =>
+const normalizeWindows = (p) =>
     path
         .normalize(p)
         .split(/[\\\/]/g)
@@ -67,7 +66,6 @@ const ACTION = async ({ opt, props }) => {
     for (const file of arcli
         .globby(
             [
-                './.core/**/reactium-arcli.js',
                 './src/**/reactium-arcli.js',
                 './reactium_modules/**/reactium-arcli.js',
                 './node_modules/**/reactium-arcli.js',
@@ -77,7 +75,7 @@ const ACTION = async ({ opt, props }) => {
             },
         )
         .filter(Boolean)
-        .map(p => path.resolve(p))
+        .map((p) => path.resolve(p))
         .map(normalizeWindows)) {
         await import(file);
     }
@@ -183,12 +181,12 @@ const ACTION = async ({ opt, props }) => {
         actions,
         options: { params, props, spinner },
     })
-        .then(success => {
+        .then((success) => {
             spinner.succeed('complete!');
             console.log('');
             return success;
         })
-        .catch(error => {
+        .catch((error) => {
             spinner.fail('error!');
             console.error(error);
             return error;
@@ -200,11 +198,11 @@ export const COMMAND = ({ program, props }) => {
         .command(ENUMS.NAME)
         .description(ENUMS.DESC)
         .on('--help', HELP)
-        .action(opt => ACTION({ opt, props, program }));
+        .action((opt) => ACTION({ opt, props, program }));
 
     program.commands
-        .filter(cmd => Boolean(cmd._name === ENUMS.NAME))
-        .forEach(cmd =>
+        .filter((cmd) => Boolean(cmd._name === ENUMS.NAME))
+        .forEach((cmd) =>
             Object.values(ENUMS.FLAGS).forEach(({ flag, desc }) =>
                 cmd.option(flag, desc),
             ),
