@@ -8,7 +8,7 @@ const globby = globbyPatched.sync;
 
 global.rootPath = path.resolve(__dirname, '..');
 
-const normalizeWindows = p =>
+const normalizeWindows = (p) =>
     path
         .normalize(p)
         .split(/[\\\/]/g)
@@ -19,9 +19,6 @@ export default async () => {
     // include boot DDD artifacts
     if (!global.bootHooks) {
         global.bootHooks = globby([
-            `${rootPath}/.core/**/reactium-boot.js`,
-            `${rootPath}/.core/**/reactium-boot.mjs`,
-            `${rootPath}/.core/**/reactium-boot.cjs`,
             `${rootPath}/src/**/reactium-boot.js`,
             `${rootPath}/src/**/reactium-boot.mjs`,
             `${rootPath}/src/**/reactium-boot.cjs`,
